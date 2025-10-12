@@ -1,0 +1,42 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e9b32d;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+}
+
+.navbar-left {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0px 20px 120px;
+}
+
+.navbar-left-brand {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.navbar-left-logo {
+  width: 50px;
+  height: 50px;
+}
+
+.navbar-right-button {
+  cursor: pointer;
+  font-size: 1.4rem;
+  margin-right: 120px;
+  font-weight: 600;
+  padding: 10px 30px;
+  border-radius: 12px;
+  transition: all 0.3s linear;
+}
+
+.navbar-right-button:hover {
+  transform: scale(1.06);
+}
