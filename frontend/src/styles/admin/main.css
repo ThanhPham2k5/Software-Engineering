@@ -1,0 +1,39 @@
+.body {
+  padding-top: 120px;
+  padding-bottom: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.body-slogan {
+  font-family: var(--font-genos);
+  margin: 80px 0;
+  font-size: 4rem;
+  font-weight: 500;
+}
+
+.body-title {
+  font-family: var(--font-genos);
+  margin-bottom: 20px;
+  font-size: 10rem;
+  font-weight: 600;
+}
+
+.body-accountName {
+  font-family: var(--font-genos);
+  margin-bottom: 80px;
+  font-size: 3rem;
+  font-weight: 500;
+}
+
+.body-message {
+  cursor: pointer;
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 60px;
+  height: 60px;
+}

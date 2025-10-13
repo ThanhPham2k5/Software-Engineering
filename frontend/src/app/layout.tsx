@@ -1,4 +1,6 @@
 import "@/styles/globals.css";
+import "@/styles/components/navbar.css";
+import "@/styles/components/footer.css";
 import { Kanit, Genos } from "next/font/google";
 
 const kanit = Kanit({

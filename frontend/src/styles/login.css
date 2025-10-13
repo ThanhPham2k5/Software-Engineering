@@ -1,0 +1,70 @@
+.body {
+  padding-top: 90px;
+}
+
+.body-background {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fcf4e0;
+  width: calc(100% - 900px);
+  margin: 110px auto;
+  border-radius: 12px;
+}
+
+.body-title {
+  margin-top: 48px;
+  margin-bottom: 25px;
+  font-family: var(--font-genos);
+  font-size: 4.2rem;
+  font-weight: bold;
+}
+
+.body-email,
+.body-password {
+  position: relative;
+  margin: 0 80px 40px 80px;
+  background-color: #fff;
+  border: solid 1px #000;
+  border-radius: 8px;
+}
+
+.body-email-label,
+.body-password-label {
+  position: absolute;
+  font-family: var(--font-genos);
+  font-size: 3rem;
+  font-weight: 500;
+  left: 12px;
+  top: 10px;
+}
+
+.body-email-input,
+.body-password-input {
+  width: 400px;
+  height: 50px;
+  margin-left: 136px;
+  outline: none;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-genos);
+  font-size: 3rem;
+  font-weight: 500;
+}
+
+.body-button {
+  cursor: pointer;
+  font-family: var(--font-genos);
+  font-size: 3rem;
+  font-weight: 600;
+  background-color: #e9b32d;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 48px;
+  transition: all 0.3s linear;
+}
+
+.body-button:hover {
+  transform: scale(1.06);
+}
