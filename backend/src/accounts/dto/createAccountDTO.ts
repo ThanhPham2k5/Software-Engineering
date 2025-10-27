@@ -18,7 +18,7 @@ export class CreateAccountDto {
 
   @IsNotEmpty({ message: 'Vai trò tài khoản không được rỗng' })
   @IsString({ message: 'Vai trò tài khoản phải là chuỗi' })
-  @IsIn(['Quản lý', 'Tài xế', 'Phụ huynh'], {
+  @IsEnum(['Quản lý', 'Tài xế', 'Phụ huynh'], {
     message: 'Vai trò tài khoản phải là quản lý, tài xế hoặc phụ huynh',
   })
   Role: string;
