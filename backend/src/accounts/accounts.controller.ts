@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   HttpException,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/createAccountDTO';
