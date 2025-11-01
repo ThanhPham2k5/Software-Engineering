@@ -1,25 +1,73 @@
+"use client";
 /* eslint-disable @next/next/no-img-element */
 import Footer from "@/components/footer/page";
 import NavBar from "@/components/navbar/page";
 import "@/styles/admin/scheduledetail.css";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function ScheduleDetailPage() {
+  const router = useRouter();
+  const [showMap, setShowMap] = useState(false);
+
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    function closeMap(e: MouseEvent) {
+      if (mapRef.current && !mapRef.current.contains(e.target as Node)) {
+        setShowMap(false);
+      }
+    }
+
+    document.addEventListener("mousedown", closeMap);
+
+    return () => {
+      document.addEventListener("mousedown", closeMap);
+    };
+  }, [showMap]);
+
   return (
     <>
       <NavBar disable={true} isLogined={true}></NavBar>
 
       <div className="detail">
+        {showMap && (
+          <div className="detail-map">
+            {/* put map here */}
+            <div className="map" ref={mapRef}>
+              <div className="temp">nothing</div>
+            </div>
+          </div>
+        )}
+
         <div className="detail-header">
           <div className="detail-title">Chi tiết lịch trình</div>
 
-          <div className="detail-return-button">
-            <img
-              src="/return-ico.png"
-              alt="return-ico"
-              className="return-ico"
-            />
+          <div className="detail-buttons">
+            <div
+              className="detail-return-button"
+              onClick={() => router.push("/admin/shedule")}
+            >
+              <img
+                src="/return-ico.png"
+                alt="return-ico"
+                className="return-ico"
+              />
 
-            <div className="return-text">Quay lại</div>
+              <div className="return-text">Quay lại</div>
+            </div>
+
+            <div
+              className="detail-show-button"
+              onClick={() => setShowMap(true)}
+            >
+              <img
+                src="/body-password-show.png"
+                alt="show-ico"
+                className="show-ico"
+              />
+
+              <div className="show-text">Theo dõi</div>
+            </div>
           </div>
         </div>
 
@@ -49,12 +97,75 @@ export default function ScheduleDetailPage() {
               <div className="student-card">
                 <div className="student-id">HS-01</div>
 
-                <div className="student-name">Lê Văn A</div>
+                <div className="student-name">Em: Lê Văn A</div>
 
-                <div className="student-parent">Huỳnh Thanh A</div>
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
               </div>
 
               {/* fake items */}
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
+
+              <div className="student-card">
+                <div className="student-id">HS-01</div>
+
+                <div className="student-name">Em: Lê Văn A</div>
+
+                <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
+              </div>
             </div>
           </div>
         </div>
