@@ -13,44 +13,68 @@
   border-radius: 12px;
 }
 
-.body-title {
+.Body-title {
   margin-top: 48px;
   margin-bottom: 25px;
-  font-family: var(--font-genos);
-  font-size: 4.2rem;
-  font-weight: bold;
+  font-size: 4rem;
+  font-weight: 600;
 }
 
-.body-email,
+.body-username,
 .body-password {
   position: relative;
-  margin: 0 80px 40px 80px;
   background-color: #fff;
   border: solid 1px #000;
   border-radius: 8px;
 }
 
-.body-email-label,
+.body-password {
+  margin-top: 40px;
+}
+
+.body-username-label,
 .body-password-label {
   position: absolute;
-  font-family: var(--font-genos);
-  font-size: 3rem;
-  font-weight: 500;
+  font-size: 2.8rem;
+  font-weight: 400;
   left: 12px;
   top: 10px;
 }
 
-.body-email-input,
+.body-username-input,
 .body-password-input {
-  width: 400px;
+  width: 500px;
   height: 50px;
-  margin-left: 136px;
   outline: none;
   border: none;
   border-radius: 8px;
-  font-family: var(--font-genos);
-  font-size: 3rem;
-  font-weight: 500;
+  font-family: "kanit";
+  font-size: 2.8rem;
+  font-weight: 400;
+}
+
+.body-username-input {
+  padding: 14px 40px 14px 160px;
+}
+
+.body-password-hidden {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+.body-password-input {
+  padding: 14px 60px 14px 150px;
+}
+
+.error {
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: #ff0000;
+  margin-top: 12px;
 }
 
 .body-button {
@@ -62,6 +86,7 @@
   border-radius: 8px;
   padding: 10px;
   margin-bottom: 48px;
+  margin-top: 40px;
   transition: all 0.3s linear;
 }
 

@@ -125,13 +125,15 @@ table {
 }
 
 /* CSS GENERAL */
-* {
+*,
+*::after,
+*::before {
   box-sizing: border-box;
 }
 
 body {
   font-family: var(--font-kanit);
-  font-weight: normal;
+  font-weight: 400;
   margin: 0 auto;
   user-select: none;
 }

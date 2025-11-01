@@ -1,0 +1,32 @@
+.detail {
+  margin-top: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 44px;
+}
+
+.detail-title {
+  font-size: 4rem;
+  font-weight: 500;
+  color: #000;
+}
+
+.detail-return-button {
+  padding: 12px 20px;
+  border-radius: 24px;
+  background-color: #f2ca68;
+}
+
+.return-text {
+  font-size: 2.4rem;
+  font-weight: 500;
+  color: #000;
+}

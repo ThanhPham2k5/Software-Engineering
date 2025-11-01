@@ -1,3 +1,76 @@
+.menu-button {
+  position: fixed;
+  left: 24px;
+  top: 24px;
+  z-index: 1;
+  margin-top: 90px;
+  padding: 10px;
+  background-color: #e9b32d;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+.menu-button:hover .menu-button-ico {
+  transform: rotate(0.5turn);
+}
+
+.menu-button-ico {
+  width: 30px;
+  height: 30px;
+  transition: all 0.6s ease;
+}
+
+.menu {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgb(233, 179, 45, 0.8);
+  margin-top: 90px;
+  margin-bottom: 72px;
+  z-index: 1;
+  transform: translateX(0);
+  animation: show 0.8s ease 1;
+}
+
+@keyframes show {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.schedule {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 40px;
+  width: 100%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.schedule:hover {
+  background-color: #e9b32d;
+}
+
+.schedule-ico {
+  width: 40px;
+  height: 40px;
+}
+
+.schedule-text {
+  font-size: 2.8rem;
+  font-weight: 500;
+  color: #000;
+  margin-left: 12px;
+}
+
 .body {
   padding-top: 120px;
   padding-bottom: 120px;
