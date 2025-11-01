@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "@/styles/admin/shedule.css";
 import NavBar from "@/components/navbar/page";
 import Footer from "@/components/footer/page";
 import { useRouter } from "next/navigation";
+import CreateSchedule from "./create/page";
 
 export default function ShedulePage() {
   useEffect(() => {
@@ -13,12 +14,20 @@ export default function ShedulePage() {
 
   const router = useRouter();
   const id = 123;
+  const [clickCreate, setClickCreate] = useState(false);
 
   return (
     <>
       <NavBar disable={true} isLogined={true}></NavBar>
 
       <div className="Shedule">
+        {clickCreate && (
+          <CreateSchedule
+            createProp={clickCreate}
+            setCreateProp={setClickCreate}
+          ></CreateSchedule>
+        )}
+
         <div className="Shedule-slogan">
           Đồng hành an toàn – Vững bước tương lai
         </div>
@@ -26,7 +35,10 @@ export default function ShedulePage() {
         <div className="Shedule-head">
           <div className="Shedule-title">Quản lý lịch trình</div>
 
-          <div className="Shedule-add-button">
+          <div
+            className="Shedule-add-button"
+            onClick={() => setClickCreate(true)}
+          >
             <img
               src="/shedule-ico.png"
               alt="add-button-ico"
@@ -100,7 +112,7 @@ export default function ShedulePage() {
                 src="/menu-button-ico.png"
                 alt="Schedule-menu-ico"
                 className="Schedule-menu-ico"
-                onClick={() => router.push(`/admin/shedule/${id}`)}
+                onClick={() => router.push(`/admin/schedule/${id}`)}
               />
 
               <img

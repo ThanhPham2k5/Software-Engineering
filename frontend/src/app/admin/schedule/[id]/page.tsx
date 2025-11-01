@@ -21,7 +21,7 @@ export default function ScheduleDetailPage() {
     document.addEventListener("mousedown", closeMap);
 
     return () => {
-      document.addEventListener("mousedown", closeMap);
+      document.removeEventListener("mousedown", closeMap);
     };
   }, [showMap]);
 
@@ -45,7 +45,7 @@ export default function ScheduleDetailPage() {
           <div className="detail-buttons">
             <div
               className="detail-return-button"
-              onClick={() => router.push("/admin/shedule")}
+              onClick={() => router.push("/admin/schedule")}
             >
               <img
                 src="/return-ico.png"

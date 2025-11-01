@@ -24,7 +24,7 @@ export default function MainPage() {
     if (showMenu) document.addEventListener("mousedown", closeMenu);
 
     return () => {
-      if (showMenu) document.addEventListener("mousedown", closeMenu);
+      if (showMenu) document.removeEventListener("mousedown", closeMenu);
     };
   }, [showMenu]);
 
@@ -43,7 +43,7 @@ export default function MainPage() {
 
       {showMenu && (
         <div className="menu" ref={menuRef}>
-          <Link href="/admin/shedule" className="schedule">
+          <Link href="/admin/schedule" className="schedule">
             <img
               src="/shedule-ico.png"
               alt="schedule-ico"

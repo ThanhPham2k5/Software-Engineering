@@ -1,0 +1,145 @@
+.Create {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgb(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.Create-form {
+  padding: 40px;
+  background-color: #e9b32d;
+  border-radius: 12px;
+  margin-top: 60px;
+}
+
+.Create-body {
+  padding: 50px 64px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 2px solid #000;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.Create-title {
+  font-size: 4rem;
+  font-weight: 500;
+  color: #000;
+}
+
+.Create-info {
+  padding: 40px 60px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 2px solid #000;
+  margin-top: 20px;
+  margin-bottom: 36px;
+}
+
+.Create-driver,
+.Create-bus,
+.Create-route,
+.Create-time,
+.Create-from,
+.Create-to,
+.Create-list {
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #000;
+  margin-top: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Create-driver {
+  margin-top: 0;
+}
+
+.Create-label {
+  font-weight: 500;
+  margin-right: 24px;
+  width: 400px;
+}
+
+.Create-select,
+#time,
+#from,
+#to,
+#list {
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: #000;
+  font-family: "kanit";
+  outline: none;
+  border: 2px solid #000;
+  width: 100%;
+  padding: 10px;
+}
+
+.Create-list {
+  align-items: start;
+}
+
+#list {
+  max-height: 400px;
+}
+
+.Create-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 100px;
+}
+
+.Create-cancel-button,
+.Create-done-button {
+  padding: 12px 20px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.4rem;
+  font-weight: 500;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.Create-cancel-button {
+  background-color: #ff8686;
+  padding: 12px 30px;
+}
+
+.Create-cancel-button:hover {
+  background-color: #ff0000;
+}
+
+.Create-done-button {
+  background-color: #6affa5;
+}
+
+.Create-done-button:hover {
+  background-color: #00c951;
+}
+
+.cancel-ico {
+  width: 20px;
+  height: 20px;
+}
+
+.done-ico {
+  width: 30px;
+  height: 30px;
+}
+
+.cancel-text,
+.done-text {
+  margin-left: 12px;
+}
