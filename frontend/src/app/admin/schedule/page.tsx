@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "@/styles/admin/shedule.css";
 import NavBar from "@/components/navbar/page";
 import Footer from "@/components/footer/page";
 import { useRouter } from "next/navigation";
 import CreateSchedule from "./create/page";
+import ModifySchedule from "./modify/[id]/page";
 
 export default function ShedulePage() {
   useEffect(() => {
@@ -15,6 +16,7 @@ export default function ShedulePage() {
   const router = useRouter();
   const id = 123;
   const [clickCreate, setClickCreate] = useState(false);
+  const [clickModify, setClickModify] = useState(false);
 
   return (
     <>
@@ -26,6 +28,13 @@ export default function ShedulePage() {
             createProp={clickCreate}
             setCreateProp={setClickCreate}
           ></CreateSchedule>
+        )}
+
+        {clickModify && (
+          <ModifySchedule
+            modifyProp={clickModify}
+            setModifyProp={setClickModify}
+          ></ModifySchedule>
         )}
 
         <div className="Shedule-slogan">
@@ -106,6 +115,13 @@ export default function ShedulePage() {
                 src="/Schedule-inactive-ico.png"
                 alt="Schedule-status-ico"
                 className="Schedule-status-ico"
+              />
+
+              <img
+                src="/modify-button-ico.png"
+                alt="modify-menu-ico"
+                className="modify-menu-ico"
+                onClick={() => setClickModify(true)}
               />
 
               <img

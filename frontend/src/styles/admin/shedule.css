@@ -172,7 +172,8 @@
 
 .Schedule-status-ico,
 .Schedule-menu-ico,
-.Schedule-delete-ico {
+.Schedule-delete-ico,
+.modify-menu-ico {
   width: 40px;
   height: 40px;
   margin-left: 36px;
@@ -183,6 +184,7 @@
 }
 
 .Schedule-menu-ico,
-.Schedule-delete-ico {
+.Schedule-delete-ico,
+.modify-menu-ico {
   cursor: pointer;
 }
