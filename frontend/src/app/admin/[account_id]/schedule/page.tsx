@@ -4,15 +4,59 @@ import { useEffect, useState } from "react";
 import "@/styles/admin/shedule.css";
 import NavBar from "@/components/navbar/page";
 import Footer from "@/components/footer/page";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import CreateSchedule from "./create/page";
 import ModifySchedule from "./modify/[id]/page";
 
 export default function ShedulePage() {
   const [schedules, setShedule] = useState([]);
+  const param = useParams();
+  const router = useRouter();
+  const account_id = param.account_id;
+  const [validAccount, setValidAccount] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAccount() {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
+        );
+
+        if (!response.ok) {
+          setValidAccount(false);
+          return;
+        }
+
+        const account = await response.json();
+        if (account && account.Role === "Quản lý") {
+          setValidAccount(true);
+          return;
+        } else {
+          setValidAccount(false);
+        }
+      } catch (error) {
+        console.error("Lỗi kiểm tra tài khoản:", error);
+        setValidAccount(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setIsLoading(true); //chờ
+    checkAccount();
+  }, [account_id]);
+
+  useEffect(() => {
+    if (!validAccount && !isLoading) {
+      router.push("/login");
+    }
+  }, [validAccount, isLoading, router]);
 
   async function getScheduleFromDatabase() {
-    const response = await fetch("http://localhost:8386/schedules");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/schedules`
+    );
 
     const data = await response.json();
     setShedule(data);
@@ -26,8 +70,6 @@ export default function ShedulePage() {
     document.title = "Shedule Page";
   }, []);
 
-  const router = useRouter();
-  const id = 123;
   const [clickCreate, setClickCreate] = useState(false);
   const [clickModify, setClickModify] = useState(false);
 
@@ -57,17 +99,32 @@ export default function ShedulePage() {
         <div className="Shedule-head">
           <div className="Shedule-title">Quản lý lịch trình</div>
 
-          <div
-            className="Shedule-add-button"
-            onClick={() => setClickCreate(true)}
-          >
-            <img
-              src="/shedule-ico.png"
-              alt="add-button-ico"
-              className="add-button-ico"
-            />
+          <div className="Schedule-buttons">
+            <div
+              className="Shedule-add-button"
+              onClick={() => setClickCreate(true)}
+            >
+              <img
+                src="/shedule-ico.png"
+                alt="add-button-ico"
+                className="add-button-ico"
+              />
 
-            <div className="add-button-text">Thêm lịch trình</div>
+              <div className="add-button-text">Thêm lịch trình</div>
+            </div>
+
+            <div
+              className="Shedule-return-button"
+              onClick={() => router.push(`/admin/${account_id}/main`)}
+            >
+              <img
+                src="/return-ico.png"
+                alt="return-ico"
+                className="return-button-ico"
+              />
+
+              <div className="return-button-text">Quay lại</div>
+            </div>
           </div>
         </div>
 
@@ -146,7 +203,9 @@ export default function ShedulePage() {
                     alt="Schedule-menu-ico"
                     className="Schedule-menu-ico"
                     onClick={() =>
-                      router.push(`/admin/schedule/${schedule._id}`)
+                      router.push(
+                        `/admin/${account_id}/schedule/${schedule._id}`
+                      )
                     }
                   />
 

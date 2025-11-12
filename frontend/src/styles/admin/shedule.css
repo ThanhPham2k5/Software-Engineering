@@ -15,7 +15,7 @@
 
 .Shedule-head {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   width: 100%;
   margin-top: 48px;
@@ -25,10 +25,16 @@
   font-size: 3.4rem;
   font-weight: 500;
   color: #000;
-  margin-left: 300px;
 }
 
-.Shedule-add-button {
+.Schedule-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Shedule-add-button,
+.Shedule-return-button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -38,19 +44,25 @@
   cursor: pointer;
   transition: all 0.3s ease;
   border: 2px solid #000;
-  margin-right: 300px;
 }
 
-.Shedule-add-button:hover {
+.Shedule-add-button:hover,
+.Shedule-return-button:hover {
   background-color: #e9b32d;
 }
 
-.add-button-ico {
+.Shedule-return-button {
+  margin-left: 40px;
+}
+
+.add-button-ico,
+.return-button-ico {
   width: 40px;
   height: 40px;
 }
 
-.add-button-text {
+.add-button-text,
+.return-button-text {
   font-size: 2.4rem;
   font-weight: 500;
   color: #000;

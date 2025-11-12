@@ -14,11 +14,13 @@ import { Location } from './schemas/location.schema';
 import { RouteDetail } from './schemas/routeDetail.schema';
 import { Schedule } from './schemas/schedule.schema';
 import { ScheduleDetail } from './schemas/scheduleDetail.schema';
+import { AccountsService } from './accounts/accounts.service';
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectModel(Account.name) private accountModel: Model<Account>,
+    private accountsService: AccountsService,
     @InjectModel(Manager.name) private managerModel: Model<Manager>,
     @InjectModel(Driver.name) private driverModel: Model<Driver>,
     @InjectModel(Parent.name) private parentModel: Model<Parent>,
@@ -55,9 +57,9 @@ export class AppService {
     console.log('Delete Completed');
 
     console.log('Initializing All Database...');
-    const accounts = await this.accountModel.insertMany([
+    const initialAccounts = [
       {
-        AccountName: 'nigga',
+        AccountName: 'nva@manager.bus.edu.vn',
         Password: 'manager@123',
         Role: 'Quản lý',
         Status: true,
@@ -74,7 +76,25 @@ export class AppService {
         Role: 'Phụ huynh',
         Status: true,
       },
-    ]);
+    ];
+
+    const accountsWithHashedPasswords = await Promise.all(
+      initialAccounts.map(async (account) => {
+        const hashedPassword = await this.accountsService.hashPassword(
+          account.Password,
+        );
+        return {
+          ...account,
+          Password: hashedPassword,
+        };
+      }),
+    );
+
+    const accounts = await this.accountModel.insertMany(
+      accountsWithHashedPasswords,
+    );
+
+    console.log(`Đã khởi tạo ${accounts.length} tài khoản thành công.`);
 
     const managers = await this.managerModel.insertMany([
       {

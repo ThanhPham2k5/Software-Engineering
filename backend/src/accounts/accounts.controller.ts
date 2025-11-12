@@ -8,6 +8,8 @@ import {
   Delete,
   HttpException,
   ValidationPipe,
+  Query,
+  HttpStatus,
 } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/createAccountDTO';
@@ -24,6 +26,33 @@ export class AccountsController {
     if (!postAccount)
       throw new HttpException('Thêm tài khoản không thành công', 404);
     return postAccount;
+  }
+
+  @Post('login')
+  async getAccountByBody(
+    @Body('username') username: string,
+    @Body('password') password: string,
+  ) {
+    if (!username || !password) {
+      throw new HttpException(
+        'Vui lòng cung cấp tên đăng nhập và mật khẩu.',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const account = await this.accountsService.validateAccount(
+      username,
+      password,
+    );
+
+    if (!account) {
+      throw new HttpException(
+        'Tên đăng nhập hoặc mật khẩu không đúng.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+
+    return { Account_id: account._id };
   }
 
   @Get()

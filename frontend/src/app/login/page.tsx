@@ -12,25 +12,49 @@ export default function Login() {
   }, []);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("nva@manager.bus.edu.vn");
+  const [password, setPassword] = useState("manager@123");
   const [validUsername, setValidUsername] = useState(true);
   const [validPassword, setValidPassword] = useState(true);
+  const router = useRouter();
 
   function clickShow() {
     setShowPassword((prev) => !prev);
   }
 
-  const router = useRouter();
-  function checkLogin() {
-    if (username === "admin" && password === "admin") {
-      router.push("/admin/main");
-      return;
+  async function checkLogin() {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/accounts/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        console.error("Lỗi khi tải tài khoản:");
+        setValidUsername(false);
+        setValidPassword(false);
+        return;
+      }
+
+      const account = await response.json();
+
+      setValidUsername(true);
+      setValidPassword(true);
+      router.push(`/admin/${account.Account_id}/main`);
+    } catch (error) {
+      console.error("Lỗi kết nối API:", error);
+      setValidUsername(false);
+      setValidPassword(false);
     }
-    if (username !== "admin") setValidUsername(false);
-    else setValidUsername(true);
-    if (password !== "admin") setValidPassword(false);
-    else setValidPassword(true);
   }
 
   return (
