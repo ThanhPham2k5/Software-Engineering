@@ -18,11 +18,15 @@ export class SchedulesService {
   }
 
   getSchedules() {
-    return this.ScheduleModel.find();
+    return this.ScheduleModel.find().populate(['DriverID', 'BusID', 'RouteID']);
   }
 
   getScheduleById(id: string) {
-    return this.ScheduleModel.findById(id);
+    return this.ScheduleModel.findById(id).populate([
+      'DriverID',
+      'BusID',
+      'RouteID',
+    ]);
   }
 
   updateSchedule(id: string, updateScheduleDto: UpdateScheduleDto) {

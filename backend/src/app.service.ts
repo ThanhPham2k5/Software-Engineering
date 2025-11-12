@@ -57,7 +57,7 @@ export class AppService {
     console.log('Initializing All Database...');
     const accounts = await this.accountModel.insertMany([
       {
-        AccountName: 'nva@manager.bus.edu.vn',
+        AccountName: 'nigga',
         Password: 'manager@123',
         Role: 'Quản lý',
         Status: true,
@@ -144,14 +144,25 @@ export class AppService {
 
     const locations = await this.locationModel.insertMany([
       {
-        LocationName: 'Đại học Sài Gòn',
-        Address: '273 An Dương Vương, Chợ Quán, TPHCM',
+        LocationName: 'Nhà Thờ Lớn Hà Nội',
+        Address: '40 Nhà Chung, Hoàn Kiếm, Hà Nội',
         Status: true,
+        LocationX: 21.028667,
+        LocationY: 105.848843,
       },
       {
-        LocationName: 'Bệnh viện Chợ Rẫy',
-        Address: '201B, Nguyễn Chí Thanh, Chợ Lớn, TPHCM',
+        LocationName: 'Phố Hàng Gai',
+        Address: 'Hoàn Kiếm, Hà Nội',
         Status: true,
+        LocationX: 21.03,
+        LocationY: 105.8505,
+      },
+      {
+        LocationName: 'Phố Hàng Trống',
+        Address: 'Hoàn Kiếm, Hà Nội',
+        Status: true,
+        LocationX: 21.0291,
+        LocationY: 105.85,
       },
     ]);
 
@@ -160,13 +171,33 @@ export class AppService {
         RouteName: 'Đại học Sài Gòn - Bệnh viện Chợ Rẫy',
         Status: true,
       },
+      {
+        RouteName: 'test',
+        Status: true,
+      },
     ]);
 
     const routeDetails = await this.routeDetailModel.insertMany([
       {
         RouteID: routes[0]._id,
-        LocationStartID: locations[0]._id,
+        LocationStartID: locations[2]._id,
         LocationEndID: locations[1]._id,
+        Distance: 13,
+        Speed: 35,
+        Order: 1,
+      },
+      {
+        RouteID: routes[0]._id,
+        LocationStartID: locations[1]._id,
+        LocationEndID: locations[0]._id,
+        Distance: 13,
+        Speed: 35,
+        Order: 2,
+      },
+      {
+        RouteID: routes[1]._id,
+        LocationStartID: locations[0]._id,
+        LocationEndID: locations[2]._id,
         Distance: 13,
         Speed: 35,
         Order: 1,
@@ -179,6 +210,14 @@ export class AppService {
         DriverID: drivers[0]._id,
         BusID: buses[0]._id,
         RouteID: routes[0]._id,
+        Duration: 30,
+        Status: true,
+      },
+      {
+        ManagerID: managers[0]._id,
+        DriverID: drivers[0]._id,
+        BusID: buses[0]._id,
+        RouteID: routes[1]._id,
         Duration: 30,
         Status: true,
       },

@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { RouteDetail, RouteDetailSchema } from 'src/schemas/routeDetail.schema';
 import { LocationsModule } from 'src/locations/locations.module';
 import { RoutesModule } from 'src/routes/routes.module';
+import { LocationSchema, Location } from 'src/schemas/location.schema';
 
 @Module({
   imports: [

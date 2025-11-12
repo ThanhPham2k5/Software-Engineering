@@ -11,6 +11,12 @@ export class Location {
 
   @Prop({ required: true })
   Status: boolean;
+
+  @Prop({ required: true })
+  LocationX: number;
+
+  @Prop({ required: true })
+  LocationY: number;
 }
 
 export const LocationSchema = SchemaFactory.createForClass(Location);

@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsNumber } from 'class-validator';
 
 export class UpdateLocationDto {
   @IsOptional()
@@ -12,4 +12,12 @@ export class UpdateLocationDto {
   @IsOptional()
   @IsBoolean({ message: 'Tình trạng trạm phải là dạng đúng/sai' })
   Status?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  LocationX?: number;
+
+  @IsOptional()
+  @IsNumber()
+  LocationY?: number;
 }

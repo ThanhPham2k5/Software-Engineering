@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateLocationDto {
   @IsNotEmpty({ message: 'Tên trạm không được rỗng' })
@@ -12,4 +12,12 @@ export class CreateLocationDto {
   @IsNotEmpty({ message: 'Tình trạng trạm không được rỗng' })
   @IsBoolean({ message: 'Tình trạng trạm phải là dạng đúng/sai' })
   Status: boolean;
+
+  @IsNotEmpty()
+  @IsNumber()
+  LocationX: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  LocationY: number;
 }

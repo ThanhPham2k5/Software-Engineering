@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import "@/styles/admin/shedule.css";
 import NavBar from "@/components/navbar/page";
 import Footer from "@/components/footer/page";
@@ -8,6 +8,19 @@ import { useRouter } from "next/navigation";
 import CreateSchedule from "./create/page";
 
 export default function ShedulePage() {
+  const [schedules, setShedule] = useState([]);
+
+  async function getScheduleFromDatabase() {
+    const response = await fetch("http://localhost:8386/schedules");
+
+    const data = await response.json();
+    setShedule(data);
+  }
+
+  useEffect(() => {
+    getScheduleFromDatabase();
+  }, []);
+
   useEffect(() => {
     document.title = "Shedule Page";
   }, []);
@@ -95,33 +108,40 @@ export default function ShedulePage() {
 
           <div className="Shedule-list">
             {/* example item */}
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
+            {schedules.map((schedule) => {
+              return (
+                <div className="Schedule-card" key={schedule._id}>
+                  <div className="Schedule-id">{schedule._id}</div>
 
-              <div className="driver-name">Nguyễn Văn A</div>
+                  <div className="driver-name">
+                    {schedule.DriverID.DriverName}
+                  </div>
 
-              <div className="bus-id">36B-8386</div>
+                  <div className="bus-id">{schedule.BusID.BusLicense}</div>
 
-              <img
-                src="/Schedule-inactive-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
+                  <img
+                    src="/Schedule-inactive-ico.png"
+                    alt="Schedule-status-ico"
+                    className="Schedule-status-ico"
+                  />
 
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-                onClick={() => router.push(`/admin/schedule/${id}`)}
-              />
+                  <img
+                    src="/menu-button-ico.png"
+                    alt="Schedule-menu-ico"
+                    className="Schedule-menu-ico"
+                    onClick={() =>
+                      router.push(`/admin/schedule/${schedule._id}`)
+                    }
+                  />
 
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
+                  <img
+                    src="/Schedule-delete-ico.png"
+                    alt="Schedule-delete-ico"
+                    className="Schedule-delete-ico"
+                  />
+                </div>
+              );
+            })}
             {/* fake items */}
             <div className="Schedule-card">
               <div className="Schedule-id">LT-001</div>

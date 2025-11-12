@@ -1,16 +1,26 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { Location } from './location.schema';
+import { Route } from './route.schema';
 
 @Schema({ timestamps: true })
 export class RouteDetail {
-  @Prop({ required: true, Type: mongoose.Types.ObjectId })
-  RouteID: string;
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Route' })
+  RouteID: Route;
 
-  @Prop({ required: true, Type: mongoose.Types.ObjectId })
-  LocationStartID: string;
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Location',
+  })
+  LocationStartID: Location;
 
-  @Prop({ required: true, Type: mongoose.Types.ObjectId })
-  LocationEndID: string;
+  @Prop({
+    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Location',
+  })
+  LocationEndID: Location;
 
   @Prop({ required: true })
   Distance: Number;

@@ -2,6 +2,8 @@ import "@/styles/globals.css";
 import "@/styles/components/navbar.css";
 import "@/styles/components/footer.css";
 import { Kanit } from "next/font/google";
+import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
 const kanit = Kanit({
   subsets: ["latin", "vietnamese"],

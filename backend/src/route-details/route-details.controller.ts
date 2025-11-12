@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   HttpException,
+  Query,
 } from '@nestjs/common';
 import { RouteDetailsService } from './route-details.service';
 import { LocationsService } from 'src/locations/locations.service';
@@ -51,14 +52,12 @@ export class RouteDetailsController {
   }
 
   @Get()
-  async getRouteDetails() {
-    const getRouteDetails = await this.routeDetailsService.getRouteDetails();
-    if (!getRouteDetails)
-      throw new HttpException(
-        'Lấy danh sách chi tiết tuyến không thành công',
-        404,
-      );
-    return getRouteDetails;
+  findAll(@Query('routeid') routeid?: string) {
+    if (routeid) {
+      return this.routeDetailsService.getAllRouteDetailByRouteId(routeid);
+    } else {
+      return this.routeDetailsService.getRouteDetails();
+    }
   }
 
   @Get(':id')

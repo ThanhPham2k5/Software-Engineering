@@ -1,19 +1,22 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { Route } from './route.schema';
+import { Driver } from './driver.schema';
+import { Bus } from './bus.schema';
 
 @Schema({ timestamps: true })
 export class Schedule {
   @Prop({ required: true, Type: mongoose.Types.ObjectId })
   ManagerID: string;
 
-  @Prop({ required: true, Type: mongoose.Types.ObjectId })
-  DriverID: string;
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Driver' })
+  DriverID: Driver;
 
-  @Prop({ required: true, Type: mongoose.Types.ObjectId })
-  BusID: string;
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Bus' })
+  BusID: Bus;
 
-  @Prop({ required: true, Type: mongoose.Types.ObjectId })
-  RouteID: string;
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Route' })
+  RouteID: Route;
 
   @Prop({ required: true })
   Duration: Number;

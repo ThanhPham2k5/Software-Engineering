@@ -18,7 +18,15 @@ export class RouteDetailsService {
   }
 
   getRouteDetails() {
-    return this.routeDetailModel.find();
+    return this.routeDetailModel
+      .find()
+      .populate(['LocationStartID', 'LocationEndID']);
+  }
+
+  getAllRouteDetailByRouteId(id: string) {
+    return this.routeDetailModel
+      .find({ RouteID: id })
+      .populate(['LocationStartID', 'LocationEndID']);
   }
 
   getRouteDetailById(id: string) {
