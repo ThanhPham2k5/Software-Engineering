@@ -52,7 +52,7 @@ export class AccountsController {
       );
     }
 
-    return { Account_id: account._id };
+    return { Account_id: account._id.toString() };
   }
 
   @Get()
