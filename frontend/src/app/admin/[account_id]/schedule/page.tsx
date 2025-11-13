@@ -5,8 +5,8 @@ import "@/styles/admin/shedule.css";
 import NavBar from "@/components/navbar/page";
 import Footer from "@/components/footer/page";
 import { useParams, useRouter } from "next/navigation";
-import CreateSchedule from "./create/page";
-import ModifySchedule from "./modify/[id]/page";
+import CreateSchedule from "../../../../components/admin/create/page";
+import ModifySchedule from "../../../../components/admin/modify/[id]/page";
 
 export default function ShedulePage() {
   const [schedules, setShedule] = useState([]);
