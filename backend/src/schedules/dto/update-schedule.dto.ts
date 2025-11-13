@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsString,
 } from 'class-validator';
 
 export class UpdateScheduleDto {
@@ -27,6 +28,10 @@ export class UpdateScheduleDto {
   @IsOptional()
   @IsInt({ message: 'Thời gian phải là số nguyên' })
   Duration?: number;
+
+  @IsNotEmpty()
+  @IsString()
+  startTime?: string;
 
   @IsOptional()
   @IsBoolean({ message: 'Tình trạng phải là dạng đúng/sai' })

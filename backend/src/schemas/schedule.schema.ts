@@ -22,6 +22,9 @@ export class Schedule {
   Duration: Number;
 
   @Prop({ required: true })
+  startTime: string;
+
+  @Prop({ required: true })
   Status: boolean;
 }
 

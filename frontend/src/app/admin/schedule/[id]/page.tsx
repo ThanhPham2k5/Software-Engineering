@@ -22,7 +22,7 @@ export default function ScheduleDetailPage() {
     async function getScheduleById() {
       const response = await fetch(`http://localhost:8386/schedules/${id}`);
       const data = await response.json();
-      console.log(data);
+      console.log(data.startTime);
       setSheduleDetail(data);
     }
     if (id) {
@@ -110,7 +110,12 @@ export default function ScheduleDetailPage() {
         >
           {/* put map here */}
           <div className="map" ref={mapRef}>
-            <Map points={cleanCoordinates} />
+            {scheduleDetail && (
+              <Map
+                points={cleanCoordinates}
+                startTime={scheduleDetail.startTime}
+              />
+            )}
           </div>
         </div>
 

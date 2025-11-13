@@ -38,7 +38,9 @@ function cleanCoordinates(coords: L.LatLng[]) {
   return cleaned;
 }
 
-function Routing({ points }) {
+function Routing({ points, startTime }) {
+  console.log("startTime la: " + startTime);
+  console.log("Time hien tai la: " + Date.now());
   const map = useMap();
   const routeLayersRef = useRef<L.LayerGroup | null>(null);
 
@@ -88,7 +90,7 @@ function Routing({ points }) {
   return null;
 }
 
-export default function Map({ points }) {
+export default function Map({ points, startTime }) {
   return (
     <MapContainer
       center={[21.028667, 105.848843]}
@@ -102,7 +104,7 @@ export default function Map({ points }) {
         attribution="© Google Maps"
       />
 
-      <Routing points={points} />
+      <Routing points={points} startTime={startTime} />
     </MapContainer>
   );
 }

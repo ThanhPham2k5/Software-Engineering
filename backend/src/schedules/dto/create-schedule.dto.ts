@@ -4,6 +4,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsNumber,
+  IsString,
 } from 'class-validator';
 
 export class CreateScheduleDto {
@@ -26,6 +27,10 @@ export class CreateScheduleDto {
   @IsNotEmpty({ message: 'Thời gian không được rỗng' })
   @IsInt({ message: 'Thời gian phải là số nguyên' })
   Duration: number;
+
+  @IsNotEmpty()
+  @IsString()
+  startTime: string;
 
   @IsNotEmpty({ message: 'Tình trạng không được rỗng' })
   @IsBoolean({ message: 'Tình trạng phải là dạng đúng/sai' })
