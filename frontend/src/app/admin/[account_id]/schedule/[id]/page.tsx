@@ -11,12 +11,21 @@ const Map = dynamic(() => import("@/components/map/page"), {
   ssr: false,
 });
 
+type ScheduleDetail = {
+  _id: string;
+  RouteID: { _id: string; RouteName: string };
+  BusID: { BusLicense: string };
+  DriverID: { DriverName: string };
+};
+
 export default function ScheduleDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
   const account_id = params.account_id;
-  const [scheduleDetail, setSheduleDetail] = useState();
+  const [scheduleDetail, setSheduleDetail] = useState<ScheduleDetail | null>(
+    null
+  );
   const [location, setLocation] = useState([]);
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,15 +93,11 @@ export default function ScheduleDetailPage() {
       console.log("KẾT QUẢ TỪ API:", data);
       setLocation(data);
     }
-    if (id) {
+
+    if (id && scheduleDetail) {
       getAllLocation();
     }
   }, [scheduleDetail, id]);
-  useEffect(() => {
-    if (location) {
-      console.log("location ĐÃ CẬP NHẬT:", location);
-    }
-  }, [location]);
 
   const cleanCoordinates = useMemo(() => {
     // 1. Sắp xếp mảng "location" GỐC
