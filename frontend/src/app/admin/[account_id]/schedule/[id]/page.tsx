@@ -5,7 +5,6 @@ import NavBar from "@/components/navbar/page";
 import "@/styles/admin/scheduledetail.css";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useRef, useState, useMemo, Fragment } from "react";
-
 import dynamic from "next/dynamic";
 
 const Map = dynamic(() => import("@/components/map/page"), {
@@ -75,6 +74,8 @@ export default function ScheduleDetailPage() {
 
   useEffect(() => {
     async function getAllLocation() {
+      if (!scheduleDetail?.RouteID?._id) return;
+
       console.log("ĐANG GỌI API CHO ID:", id);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/route-details/?routeid=${scheduleDetail.RouteID._id}`
