@@ -38,6 +38,8 @@ export default function Login() {
         }
       );
 
+      console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+
       if (!response.ok) {
         console.error("Lỗi khi tải tài khoản:");
         setValidUsername(false);
