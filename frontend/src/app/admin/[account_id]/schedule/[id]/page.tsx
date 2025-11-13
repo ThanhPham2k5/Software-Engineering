@@ -7,9 +7,9 @@ import { useRouter, useParams } from "next/navigation";
 import { useEffect, useRef, useState, useMemo, Fragment } from "react";
 import dynamic from "next/dynamic";
 
-const Map = dynamic(() => import("@/components/map/page"), {
-  ssr: false,
-});
+// const Map = dynamic(() => import("@/components/map/page"), {
+//   ssr: false,
+// });
 
 type ScheduleDetail = {
   _id: string;
@@ -170,7 +170,7 @@ export default function ScheduleDetailPage() {
         >
           {/* put map here */}
           <div className="map" ref={mapRef}>
-            <Map points={cleanCoordinates} />
+            {/* <Map points={cleanCoordinates} /> */}
           </div>
         </div>
 
