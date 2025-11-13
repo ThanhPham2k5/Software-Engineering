@@ -18,6 +18,18 @@ type ScheduleDetail = {
   DriverID: { DriverName: string };
 };
 
+type RouteDetail = {
+  Order: number;
+  LocationStartID: {
+    LocationX: number;
+    LocationY: number;
+  };
+  LocationEndID: {
+    LocationX: number;
+    LocationY: number;
+  };
+};
+
 export default function ScheduleDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -26,7 +38,7 @@ export default function ScheduleDetailPage() {
   const [scheduleDetail, setSheduleDetail] = useState<ScheduleDetail | null>(
     null
   );
-  const [location, setLocation] = useState([]);
+  const [location, setLocation] = useState<RouteDetail[]>([]);
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
