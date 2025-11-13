@@ -44,7 +44,7 @@ jobs:
           cd backend
           # Tạo thư mục cho reports
           mkdir -p test-results
-          npm run test -- accounts.service.spec.ts accounts.controller.spec.ts \
+          npm run test -- account.service.spec.ts account.controller.spec.ts \
             --reporter=jest-junit \
             --outputFile=test-results/be-report.xml
             
