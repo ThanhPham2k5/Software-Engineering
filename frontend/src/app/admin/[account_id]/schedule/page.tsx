@@ -8,8 +8,14 @@ import { useParams, useRouter } from "next/navigation";
 import CreateSchedule from "../../../../components/admin/create/page";
 import ModifySchedule from "../../../../components/admin/modify/[id]/page";
 
+type Schedule = {
+  _id: string;
+  DriverID: { DriverName: string };
+  BusID: { BusLicense: string };
+};
+
 export default function ShedulePage() {
-  const [schedules, setShedule] = useState([]);
+  const [schedules, setShedule] = useState<Schedule[]>([]);
   const param = useParams();
   const router = useRouter();
   const account_id = param.account_id;
