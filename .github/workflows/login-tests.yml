@@ -1,0 +1,65 @@
+name: Login Tests CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-login:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+          
+      - name: Run Frontend Login Tests
+        run: |
+          cd frontend
+          # Tạo thư mục cho reports
+          mkdir -p test-results
+          npm run test -- __tests__/login.test.tsx \
+            --reporter=jest-junit \
+            --outputFile=test-results/fe-report.xml
+            
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Run Backend Login Tests
+        run: |
+          cd backend
+          # Tạo thư mục cho reports
+          mkdir -p test-results
+          npm run test -- accounts.service.spec.ts accounts.controller.spec.ts \
+            --reporter=jest-junit \
+            --outputFile=test-results/be-report.xml
+            
+      - name: Archive Frontend Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-login-reports
+          path: frontend/test-results/fe-login-report.xml
+          retention-days: 1
+          
+      - name: Archive Backend Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-auth-reports
+          path: backend/test-results/be-login-report.xml
+          retention-days: 1
