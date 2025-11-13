@@ -12,15 +12,23 @@ declare module "leaflet" {
     addWaypoints: boolean;
     routeWhileDragging?: boolean;
     router?: any; // Có thể phức tạp, dùng any tạm thời nếu không rõ kiểu
+    lineOptions: {
+      styles: {
+        color: string;
+        opacity: number;
+        weight: number;
+      }[];
+    };
+    fitSelectedRoutes?: boolean;
     // ... thêm các tùy chọn khác nếu cần
   }
 
   // Định nghĩa lớp Routing.Control
   namespace Routing {
-    class Control extends Control_ {
-      // Giả định nó mở rộng L.Control (Control_)
+    // SỬA LỖI: Đổi tên class thành 'RoutingControl' để tránh xung đột với base 'Control'
+    // 'RoutingControl' sẽ mở rộng (extends) class 'Control' cơ sở của Leaflet
+    class RoutingControl extends Control {
       constructor(options: RoutingControlOptions);
-      // Định nghĩa lại hàm control để trả về lớp Control đã định nghĩa
       getPlan(): any;
       on(
         type: "routesfound",
@@ -29,8 +37,9 @@ declare module "leaflet" {
       ): this;
       // ... thêm các phương thức khác nếu bạn gọi chúng
     }
-    // Định nghĩa lại hàm factory control (hàm chính)
-    function control(options: RoutingControlOptions): Control;
+
+    // SỬA LỖI: Cập nhật hàm factory 'control' để trả về kiểu 'RoutingControl' mới
+    function control(options: RoutingControlOptions): RoutingControl;
   }
 
   // Định nghĩa kiểu dữ liệu chi tiết cho sự kiện routesfound
