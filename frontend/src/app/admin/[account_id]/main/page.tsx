@@ -4,6 +4,7 @@ import Footer from "@/components/footer/page";
 import NavBar from "@/components/navbar/page";
 import "@/styles/admin/main.css";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function MainPage() {
@@ -13,6 +14,48 @@ export default function MainPage() {
 
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const param = useParams();
+  const router = useRouter();
+  const account_id = param.account_id;
+  const [validAccount, setValidAccount] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAccount() {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
+        );
+
+        if (!response.ok) {
+          setValidAccount(false);
+          return;
+        }
+
+        const account = await response.json();
+        if (account && account.Role === "Quản lý") {
+          setValidAccount(true);
+          return;
+        } else {
+          setValidAccount(false);
+        }
+      } catch (error) {
+        console.error("Lỗi kiểm tra tài khoản:", error);
+        setValidAccount(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setIsLoading(true); //chờ
+    checkAccount();
+  }, [account_id]);
+
+  useEffect(() => {
+    if (!validAccount && !isLoading) {
+      router.push("/login");
+    }
+  }, [validAccount, isLoading, router]);
 
   useEffect(() => {
     function closeMenu(e: MouseEvent) {
@@ -43,7 +86,7 @@ export default function MainPage() {
 
       {showMenu && (
         <div className="menu" ref={menuRef}>
-          <Link href="/admin/schedule" className="schedule">
+          <Link href={`/admin/${account_id}/schedule`} className="schedule">
             <img
               src="/shedule-ico.png"
               alt="schedule-ico"

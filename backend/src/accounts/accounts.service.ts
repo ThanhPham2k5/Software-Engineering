@@ -2,8 +2,11 @@ import { Injectable, Post } from '@nestjs/common';
 import { CreateAccountDto } from './dto/createAccountDTO';
 import { UpdateAccountDto } from './dto/updateAccountDTO';
 import { InjectModel } from '@nestjs/mongoose';
-import { Account } from 'src/schemas/account.schema';
+import { Account } from '../schemas/account.schema';
 import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+
+const saltRounds = 10;
 
 @Injectable()
 export class AccountsService {
@@ -11,9 +14,46 @@ export class AccountsService {
     @InjectModel(Account.name) private accountModel: Model<Account>,
   ) {}
 
-  createAccount(createAccountDto: CreateAccountDto) {
-    const newAccount = new this.accountModel(createAccountDto);
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(saltRounds);
+    return bcrypt.hash(password, salt);
+  }
+
+  async createAccount(createAccountDto: CreateAccountDto) {
+    const hashedPassword = await this.hashPassword(createAccountDto.Password);
+    const newAccount = new this.accountModel({
+      ...createAccountDto,
+      Password: hashedPassword,
+    });
     return newAccount.save();
+  }
+
+  async comparePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  async validateAccount(
+    username: string,
+    plainPassword: string,
+  ): Promise<any | null> {
+    const account = await this.accountModel
+      .findOne({ AccountName: username })
+      .exec();
+
+    if (!account) return null;
+
+    const validPassword = await this.comparePassword(
+      plainPassword,
+      account.Password,
+    );
+
+    if (!validPassword) return null;
+    if (account.Role !== 'Quản lý') return null;
+
+    return account;
   }
 
   getAccounts() {

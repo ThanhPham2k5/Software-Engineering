@@ -5,22 +5,86 @@ import NavBar from "@/components/navbar/page";
 import "@/styles/admin/scheduledetail.css";
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useRef, useState, useMemo, Fragment } from "react";
-
 import dynamic from "next/dynamic";
 
-const Map = dynamic(() => import("../../../../components/map/page"), {
+const Map = dynamic(() => import("@/components/map/page"), {
   ssr: false,
 });
+
+type ScheduleDetail = {
+  _id: string;
+  RouteID: { _id: string; RouteName: string };
+  BusID: { BusLicense: string };
+  DriverID: { DriverName: string };
+  startTime: string;
+};
+
+type RouteDetail = {
+  Order: number;
+  LocationStartID: {
+    LocationX: number;
+    LocationY: number;
+  };
+  LocationEndID: {
+    LocationX: number;
+    LocationY: number;
+  };
+};
 
 export default function ScheduleDetailPage() {
   const params = useParams();
   const id = params.id as string;
-  const [scheduleDetail, setSheduleDetail] = useState();
-  const [location, setLocation] = useState([]);
+  const router = useRouter();
+  const account_id = params.account_id;
+  const [scheduleDetail, setSheduleDetail] = useState<ScheduleDetail | null>(
+    null
+  );
+  const [location, setLocation] = useState<RouteDetail[]>([]);
+  const [validAccount, setValidAccount] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function checkAccount() {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
+        );
+
+        if (!response.ok) {
+          setValidAccount(false);
+          return;
+        }
+
+        const account = await response.json();
+        if (account && account.Role === "Quản lý") {
+          setValidAccount(true);
+          return;
+        } else {
+          setValidAccount(false);
+        }
+      } catch (error) {
+        console.error("Lỗi kiểm tra tài khoản:", error);
+        setValidAccount(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    setIsLoading(true); //chờ
+    checkAccount();
+  }, [account_id]);
+
+  useEffect(() => {
+    if (!validAccount && !isLoading) {
+      router.push("/login");
+    }
+  }, [validAccount, isLoading, router]);
 
   useEffect(() => {
     async function getScheduleById() {
-      const response = await fetch(`http://localhost:8386/schedules/${id}`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/schedules/${id}`
+      );
       const data = await response.json();
       console.log(data.startTime);
       setSheduleDetail(data);
@@ -32,23 +96,21 @@ export default function ScheduleDetailPage() {
 
   useEffect(() => {
     async function getAllLocation() {
+      if (!scheduleDetail?.RouteID?._id) return;
+
       console.log("ĐANG GỌI API CHO ID:", id);
       const response = await fetch(
-        `http://localhost:8386/route-details/?routeid=${scheduleDetail.RouteID._id}`
+        `${process.env.NEXT_PUBLIC_API_URL}/route-details/?routeid=${scheduleDetail.RouteID._id}`
       );
       const data = await response.json();
       console.log("KẾT QUẢ TỪ API:", data);
       setLocation(data);
     }
-    if (id) {
+
+    if (id && scheduleDetail) {
       getAllLocation();
     }
   }, [scheduleDetail, id]);
-  useEffect(() => {
-    if (location) {
-      console.log("location ĐÃ CẬP NHẬT:", location);
-    }
-  }, [location]);
 
   const cleanCoordinates = useMemo(() => {
     // 1. Sắp xếp mảng "location" GỐC
@@ -77,7 +139,6 @@ export default function ScheduleDetailPage() {
 
   console.log("Đã làm sạch:", cleanCoordinates);
 
-  const router = useRouter();
   const [showMap, setShowMap] = useState(false);
 
   const mapRef = useRef<HTMLDivElement | null>(null);
@@ -125,7 +186,7 @@ export default function ScheduleDetailPage() {
           <div className="detail-buttons">
             <div
               className="detail-return-button"
-              onClick={() => router.push("/admin/schedule")}
+              onClick={() => router.push(`/admin/${account_id}/schedule`)}
             >
               <img
                 src="/return-ico.png"

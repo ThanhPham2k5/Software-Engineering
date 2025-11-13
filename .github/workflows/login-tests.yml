@@ -1,0 +1,41 @@
+name: Login Tests CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test-login:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+          
+      - name: Run Frontend Login Tests
+        run: |
+          cd frontend
+          npm run test -- __tests__/login.test.tsx
+            
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Run Backend Login Tests
+        run: |
+          cd backend
+          npm run test -- account.service.spec.ts account.controller.spec.ts
