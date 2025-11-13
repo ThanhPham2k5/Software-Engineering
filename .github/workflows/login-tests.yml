@@ -28,11 +28,7 @@ jobs:
       - name: Run Frontend Login Tests
         run: |
           cd frontend
-          # Tạo thư mục cho reports
-          mkdir -p test-results
-          npm run test -- __tests__/login.test.tsx \
-            --reporter=jest-junit \
-            --outputFile=test-results/fe-report.xml
+          npm run test -- __tests__/login.test.tsx
             
       - name: Install backend dependencies
         run: |
@@ -42,24 +38,4 @@ jobs:
       - name: Run Backend Login Tests
         run: |
           cd backend
-          # Tạo thư mục cho reports
-          mkdir -p test-results
-          npm run test -- account.service.spec.ts account.controller.spec.ts \
-            --reporter=jest-junit \
-            --outputFile=test-results/be-report.xml
-            
-      - name: Archive Frontend Test Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-login-reports
-          path: frontend/test-results/fe-login-report.xml
-          retention-days: 1
-          
-      - name: Archive Backend Test Reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-auth-reports
-          path: backend/test-results/be-login-report.xml
-          retention-days: 1
+          npm run test -- account.service.spec.ts account.controller.spec.ts
