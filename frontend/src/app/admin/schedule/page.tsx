@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import "@/styles/admin/shedule.css";
 import NavBar from "@/components/navbar/page";
 import Footer from "@/components/footer/page";
-import { useParams, useRouter } from "next/navigation";
-import CreateSchedule from "../../../../components/admin/create/page";
-import ModifySchedule from "../../../../components/admin/modify/[id]/page";
+import { useRouter } from "next/navigation";
+import CreateSchedule from "../../../components/admin/create/page";
+import ModifySchedule from "../../../components/admin/modify/[id]/page";
 
 type Schedule = {
   _id: string;
@@ -16,26 +16,40 @@ type Schedule = {
 
 export default function ShedulePage() {
   const [schedules, setShedule] = useState<Schedule[]>([]);
-  const param = useParams();
   const router = useRouter();
-  const account_id = param.account_id;
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function checkAccount() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setIsLoading(false);
+        setValidAccount(false);
+        return;
+      }
+
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem("token");
+          }
           setValidAccount(false);
           return;
         }
 
         const account = await response.json();
-        if (account && account.Role === "Quản lý") {
+        if (account && account.role === "Quản lý") {
           setValidAccount(true);
           return;
         } else {
@@ -51,7 +65,7 @@ export default function ShedulePage() {
 
     setIsLoading(true); //chờ
     checkAccount();
-  }, [account_id]);
+  }, []);
 
   useEffect(() => {
     if (!validAccount && !isLoading) {
@@ -121,7 +135,7 @@ export default function ShedulePage() {
 
             <div
               className="Shedule-return-button"
-              onClick={() => router.push(`/admin/${account_id}/main`)}
+              onClick={() => router.push(`/admin/main`)}
             >
               <img
                 src="/return-ico.png"
@@ -209,9 +223,7 @@ export default function ShedulePage() {
                     alt="Schedule-menu-ico"
                     className="Schedule-menu-ico"
                     onClick={() =>
-                      router.push(
-                        `/admin/${account_id}/schedule/${schedule._id}`
-                      )
+                      router.push(`/admin/schedule/${schedule._id}`)
                     }
                   />
 

@@ -7,18 +7,23 @@ import {
   Param,
   Delete,
   HttpException,
-  ValidationPipe,
-  Query,
+  UseGuards,
+  Request,
   HttpStatus,
 } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
 import { CreateAccountDto } from './dto/createAccountDTO';
 import { UpdateAccountDto } from './dto/updateAccountDTO';
 import mongoose from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('accounts')
 export class AccountsController {
-  constructor(private accountsService: AccountsService) {}
+  constructor(
+    private accountsService: AccountsService,
+    private jwtService: JwtService,
+  ) {}
 
   @Post()
   createAccount(@Body() createAccountDto: CreateAccountDto) {
@@ -52,7 +57,24 @@ export class AccountsController {
       );
     }
 
-    return { Account_id: account._id.toString() };
+    // tạo payload
+    const payload = {
+      sub: account._id.toString(),
+      username: account.AccountName,
+      role: account.Role,
+    };
+
+    // đăng ký token bằng payload
+    return { accessToken: this.jwtService.sign(payload) };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    if (req.user.role !== 'Quản lý') {
+      throw new HttpException('Không có quyền truy cập', HttpStatus.FORBIDDEN);
+    }
+    return req.user;
   }
 
   @Get()
@@ -63,6 +85,7 @@ export class AccountsController {
     return getAccounts;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getAccountById(@Param('id') id: string) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
