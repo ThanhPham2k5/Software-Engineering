@@ -73,7 +73,7 @@ describe('Kiểm tra AccountController:', () => {
       'manager_pass',
     );
     expect(jwtService.sign).toHaveBeenCalledWith({
-      sub: mockAccount._id,
+      sub: mockAccount._id.toString(),
       username: mockAccount.AccountName,
       role: mockAccount.Role,
     });
