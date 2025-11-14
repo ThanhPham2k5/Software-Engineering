@@ -3,6 +3,7 @@ import { AccountsController } from './accounts.controller';
 import { AccountsService } from './accounts.service';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import mongoose from 'mongoose';
+import { JwtService } from '@nestjs/jwt';
 
 // Giả lập AccountService
 const mockAccountsService = {
@@ -14,9 +15,15 @@ const mockAccountsService = {
   deleteAccount: jest.fn(),
 };
 
+// Giả lập hàm sign luôn trả về một token giả
+const mockJwtService = {
+  sign: jest.fn(() => 'mocked.jwt.token'),
+};
+
 describe('Kiểm tra AccountController:', () => {
   let controller: AccountsController;
   let service: AccountsService;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
     // Tạo model service giả
@@ -27,11 +34,16 @@ describe('Kiểm tra AccountController:', () => {
           provide: AccountsService,
           useValue: mockAccountsService,
         },
+        {
+          provide: JwtService,
+          useValue: mockJwtService,
+        },
       ],
     }).compile();
 
     controller = module.get<AccountsController>(AccountsController);
     service = module.get<AccountsService>(AccountsService);
+    jwtService = module.get<JwtService>(JwtService);
 
     jest.clearAllMocks();
   });
@@ -43,10 +55,13 @@ describe('Kiểm tra AccountController:', () => {
   it('1. Đăng nhập thành công', async () => {
     const mockAccount = {
       _id: new mongoose.Types.ObjectId('60c7283c7487f3001f37c355'),
+      AccountName: 'manager_user',
       Role: 'Quản lý',
     };
 
+    // verify mock variables
     (service.validateAccount as jest.Mock).mockResolvedValue(mockAccount);
+    (jwtService.sign as jest.Mock).mockReturnValue('mocked.jwt.token');
 
     const result = await controller.getAccountByBody(
       'manager_user',
@@ -57,7 +72,12 @@ describe('Kiểm tra AccountController:', () => {
       'manager_user',
       'manager_pass',
     );
-    expect(result).toEqual({ Account_id: '60c7283c7487f3001f37c355' });
+    expect(jwtService.sign).toHaveBeenCalledWith({
+      sub: mockAccount._id,
+      username: mockAccount.AccountName,
+      role: mockAccount.Role,
+    });
+    expect(result).toEqual({ accessToken: 'mocked.jwt.token' });
   });
 
   it('2. Đăng nhập thất bại', async () => {
