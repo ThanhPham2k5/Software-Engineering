@@ -15,8 +15,9 @@ type ScheduleDetail = {
   _id: string;
   RouteID: { _id: string; RouteName: string };
   BusID: { BusLicense: string };
-  DriverID: { DriverName: string };
+  DriverID: { _id: string; DriverName: string };
   startTime: string;
+  Status: boolean;
 };
 
 type RouteDetail = {
@@ -216,26 +217,50 @@ export default function ScheduleDetailPage() {
           {scheduleDetail && (
             <Fragment>
               <div className="detail-id">
-                Mã lịch trình: {scheduleDetail._id}
+                Mã lịch trình:{" "}
+                {scheduleDetail._id
+                  .substring(scheduleDetail._id.length - 6)
+                  .toUpperCase()}
               </div>
 
               <div className="detail-status">
                 Trạng thái:
-                <div className="status-color active">Đang hoạt động</div>
+                <div
+                  className={
+                    scheduleDetail.Status === true
+                      ? "status-color active"
+                      : "status-color inactive"
+                  }
+                  title={
+                    scheduleDetail.Status === true
+                      ? "Đang hoạt động"
+                      : "Ngưng hoạt động"
+                  }
+                >
+                  {scheduleDetail.Status === true
+                    ? "Đang hoạt động"
+                    : "Ngưng hoạt động"}
+                </div>
               </div>
 
               <div className="detail-route-name">
                 Tuyến đường: {scheduleDetail.RouteID.RouteName}
               </div>
 
-              <div className="detail-start-time">Giờ bắt đầu: 07:00 AM</div>
+              <div className="detail-start-time">
+                Giờ bắt đầu: {scheduleDetail.startTime}
+              </div>
 
               <div className="detail-bus">
                 Xe buýt: {scheduleDetail.BusID.BusLicense}
               </div>
 
               <div className="detail-driver">
-                Tài xế: {scheduleDetail.DriverID.DriverName}
+                Tài xế:{" "}
+                {scheduleDetail.DriverID._id
+                  .substring(scheduleDetail.DriverID._id.length - 6)
+                  .toUpperCase()}{" "}
+                - {scheduleDetail.DriverID.DriverName}
               </div>
 
               <div className="detail-students">

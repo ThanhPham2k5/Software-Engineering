@@ -16,24 +16,29 @@ type Schedule = {
 
 export default function ShedulePage() {
   const [schedules, setShedule] = useState<Schedule[]>([]);
+  // const [schedules, setShedule] = useState([]);
   const param = useParams();
   const router = useRouter();
   const account_id = param.account_id;
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  //xuanthien
+  const [allSchedules, setAllSchedules] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
+    null
+  );
+  //
   useEffect(() => {
     async function checkAccount() {
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
         );
-
         if (!response.ok) {
           setValidAccount(false);
           return;
         }
-
         const account = await response.json();
         if (account && account.Role === "Quản lý") {
           setValidAccount(true);
@@ -48,7 +53,6 @@ export default function ShedulePage() {
         setIsLoading(false);
       }
     }
-
     setIsLoading(true); //chờ
     checkAccount();
   }, [account_id]);
@@ -63,8 +67,11 @@ export default function ShedulePage() {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/schedules`
     );
-
     const data = await response.json();
+    console.log("haha", data);
+    //xuanthien
+    setAllSchedules(data);
+    //xuanthien
     setShedule(data);
   }
 
@@ -79,6 +86,54 @@ export default function ShedulePage() {
   const [clickCreate, setClickCreate] = useState(false);
   const [clickModify, setClickModify] = useState(false);
 
+  //xuanthien
+
+  useEffect(() => {
+    let filtered = [...allSchedules];
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (schedule) =>
+          (schedule.DriverID?.DriverName || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          (schedule.BusID?.BusLicense || "")
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          schedule._id.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setShedule(filtered);
+  }, [searchTerm, allSchedules]);
+
+  async function handleSoftDelete(scheduleId: string) {
+    if (
+      window.confirm("Bạn có chắc chắn muốn ngưng hoạt động lịch trình này?")
+    ) {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/schedules/${scheduleId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ Status: false }),
+          }
+        );
+
+        if (response.ok) {
+          getScheduleFromDatabase();
+        } else {
+          alert("Cập nhật trạng thái thất bại. Vui lòng thử lại.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi cập nhật lịch trình:", error);
+        alert("Đã xảy ra lỗi mạng.");
+      }
+    }
+  }
+  //xuanthien
   return (
     <>
       <NavBar disable={true} isLogined={true}></NavBar>
@@ -88,6 +143,9 @@ export default function ShedulePage() {
           <CreateSchedule
             createProp={clickCreate}
             setCreateProp={setClickCreate}
+            //xuanthien
+            onScheduleCreated={getScheduleFromDatabase}
+            //
           ></CreateSchedule>
         )}
 
@@ -95,6 +153,8 @@ export default function ShedulePage() {
           <ModifySchedule
             modifyProp={clickModify}
             setModifyProp={setClickModify}
+            scheduleId={selectedScheduleId}
+            onScheduleModified={getScheduleFromDatabase}
           ></ModifySchedule>
         )}
 
@@ -142,6 +202,8 @@ export default function ShedulePage() {
                 name="search"
                 id="search"
                 className="Schedule-bar"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
 
               <img
@@ -156,6 +218,7 @@ export default function ShedulePage() {
                 <label className="Schedule-label" htmlFor="from">
                   Ngày bắt đầu :{" "}
                 </label>
+
                 <input
                   type="date"
                   name="from"
@@ -168,6 +231,7 @@ export default function ShedulePage() {
                 <label className="Schedule-label" htmlFor="to">
                   Ngày kết thúc :{" "}
                 </label>
+
                 <input
                   type="date"
                   name="to"
@@ -180,28 +244,66 @@ export default function ShedulePage() {
 
           <div className="Shedule-list">
             {/* example item */}
+
             {schedules.map((schedule) => {
               return (
                 <div className="Schedule-card" key={schedule._id}>
-                  <div className="Schedule-id">{schedule._id}</div>
-
-                  <div className="driver-name">
-                    {schedule.DriverID.DriverName}
+                  <div className="Schedule-id" title={schedule._id}>
+                    {/* Cắt ngắn ID (lấy 6 ký tự cuối) */}
+                    {schedule._id
+                      .substring(schedule._id.length - 6)
+                      .toUpperCase()}
                   </div>
 
-                  <div className="bus-id">{schedule.BusID.BusLicense}</div>
+                  <div className="driver-name">
+                    {schedule.DriverID?.DriverName}
+                  </div>
+
+                  <div className="bus-id">{schedule.BusID?.BusLicense}</div>
 
                   <img
-                    src="/Schedule-inactive-ico.png"
+                    src={
+                      schedule.Status === true
+                        ? "/Schedule-active-ico.png"
+                        : "/Schedule-inactive-ico.png"
+                    }
                     alt="Schedule-status-ico"
                     className="Schedule-status-ico"
                   />
 
+                  {/* <img
+
+                    src="/modify-button-ico.png"
+
+                    alt="modify-menu-ico"
+
+                    className="modify-menu-ico"
+
+                    onClick={() => {
+
+                    setSelectedScheduleId(schedule._id);
+
+                    setClickModify(true);            
+
+              }}
+
+                  /> */}
+
                   <img
                     src="/modify-button-ico.png"
                     alt="modify-menu-ico"
-                    className="modify-menu-ico"
-                    onClick={() => setClickModify(true)}
+                    className={`modify-menu-ico ${
+                      schedule.Status === false ? "disabled" : ""
+                    }`}
+                    onClick={
+                      schedule.Status === true
+                        ? () => {
+                            setSelectedScheduleId(schedule._id);
+
+                            setClickModify(true);
+                          }
+                        : undefined
+                    }
                   />
 
                   <img
@@ -215,222 +317,33 @@ export default function ShedulePage() {
                     }
                   />
 
+                  {/* <img
+
+                    src="/Schedule-delete-ico.png"
+
+                    alt="Schedule-delete-ico"
+
+                    className="Schedule-delete-ico"
+
+                    onClick={() => handleSoftDelete(schedule._id)}
+
+                  /> */}
+
                   <img
                     src="/Schedule-delete-ico.png"
                     alt="Schedule-delete-ico"
-                    className="Schedule-delete-ico"
+                    className={`Schedule-delete-ico ${
+                      schedule.Status === false ? "disabled" : ""
+                    }`}
+                    onClick={
+                      schedule.Status === true
+                        ? () => handleSoftDelete(schedule._id)
+                        : undefined
+                    }
                   />
                 </div>
               );
             })}
-            {/* fake items */}
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
-
-            <div className="Schedule-card">
-              <div className="Schedule-id">LT-001</div>
-
-              <div className="driver-name">Nguyễn Văn A</div>
-
-              <div className="bus-id">36B-8386</div>
-
-              <img
-                src="/Schedule-active-ico.png"
-                alt="Schedule-status-ico"
-                className="Schedule-status-ico"
-              />
-
-              <img
-                src="/menu-button-ico.png"
-                alt="Schedule-menu-ico"
-                className="Schedule-menu-ico"
-              />
-
-              <img
-                src="/Schedule-delete-ico.png"
-                alt="Schedule-delete-ico"
-                className="Schedule-delete-ico"
-              />
-            </div>
           </div>
         </div>
       </div>
