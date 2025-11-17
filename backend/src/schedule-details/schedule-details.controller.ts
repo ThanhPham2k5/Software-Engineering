@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   HttpException,
+  Query,
 } from '@nestjs/common';
 import { ScheduleDetailsService } from './schedule-details.service';
 import { CreateScheduleDetailDto } from './dto/create-schedule-detail.dto';
@@ -48,15 +49,19 @@ export class ScheduleDetailsController {
   }
 
   @Get()
-  async getScheduleDetails() {
-    const getScheduleDetails =
-      await this.scheduleDetailService.getScheduleDetails();
-    if (!getScheduleDetails)
-      throw new HttpException(
-        'Lấy danh sách chi tiết lịch trình không thành công',
-        404,
-      );
-    return getScheduleDetails;
+  async getScheduleDetails(@Query('scheduleid') scheduleid?: string) {
+    if (scheduleid) {
+      return this.scheduleDetailService.getAllScheduleDetailById(scheduleid);
+    } else {
+      const getScheduleDetails =
+        await this.scheduleDetailService.getScheduleDetails();
+      if (!getScheduleDetails)
+        throw new HttpException(
+          'Lấy danh sách chi tiết lịch trình không thành công',
+          404,
+        );
+      return getScheduleDetails;
+    }
   }
 
   @Get(':id')

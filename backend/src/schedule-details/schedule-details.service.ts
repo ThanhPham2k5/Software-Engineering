@@ -20,11 +20,17 @@ export class ScheduleDetailsService {
   }
 
   getScheduleDetails() {
-    return this.ScheduleDetailModel.find();
+    return this.ScheduleDetailModel.find().populate(['StudentID']);
   }
 
   getScheduleDetailById(id: string) {
     return this.ScheduleDetailModel.findById(id);
+  }
+
+  getAllScheduleDetailById(id: string) {
+    return this.ScheduleDetailModel.find({ ScheduleID: id }).populate([
+      'StudentID',
+    ]);
   }
 
   updateScheduleDetail(

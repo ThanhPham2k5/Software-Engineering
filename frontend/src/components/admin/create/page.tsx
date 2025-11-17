@@ -29,7 +29,7 @@ type showCreate = {
 };
 
 const initialFormState = {
-  ManagerID: "69174e8d56a20dcd3b1efad9", // mã quản lí tui dùng tạm ở database máy tui / lúc code thay lại cái này
+  ManagerID: "691a705dfb91e929d6a4e8f3", // mã quản lí tui dùng tạm ở database máy tui / lúc code thay lại cái này
   DriverID: "",
   BusID: "",
   RouteID: "",

@@ -133,6 +133,18 @@ export class AppService {
         Address: '27 Tân Bình, Bình Trị Đông, TPHCM',
         ParentID: parents[0]._id,
       },
+      {
+        StudentName: 'Phạm Phu Quân 1',
+        Gender: 'Nam',
+        Address: '27 Tân Bình, Bình Trị Đông, TPHCM',
+        ParentID: parents[0]._id,
+      },
+      {
+        StudentName: 'Phạm Phu Quân 2',
+        Gender: 'Nam',
+        Address: '27 Tân Bình, Bình Trị Đông, TPHCM',
+        ParentID: parents[0]._id,
+      },
     ]);
 
     const notifications = await this.notificationModel.insertMany([
@@ -249,6 +261,16 @@ export class AppService {
       {
         ScheduleID: schedules[0]._id,
         StudentID: students[0]._id,
+        Status: true,
+      },
+      {
+        ScheduleID: schedules[0]._id,
+        StudentID: students[1]._id,
+        Status: true,
+      },
+      {
+        ScheduleID: schedules[0]._id,
+        StudentID: students[2]._id,
         Status: true,
       },
     ]);
