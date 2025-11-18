@@ -17,6 +17,7 @@ type ScheduleDetail = {
   BusID: { BusLicense: string };
   DriverID: { _id: string; DriverName: string };
   startTime: string;
+  duration: number;
   Status: boolean;
 };
 
@@ -176,6 +177,7 @@ export default function ScheduleDetailPage() {
               <Map
                 points={cleanCoordinates}
                 startTime={scheduleDetail.startTime}
+                duration={scheduleDetail.duration}
               />
             )}
           </div>

@@ -1,5 +1,5 @@
 "use client";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -11,6 +11,12 @@ import "leaflet.marker-motion";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+interface RoutingProps {
+  points: number[][];
+  startTime: string;
+  duration: number;
+}
 
 L.Icon.Default.mergeOptions({
   iconUrl: markerIcon.src,
@@ -38,9 +44,35 @@ function cleanCoordinates(coords: L.LatLng[]) {
   return cleaned;
 }
 
-function Routing({ points, startTime }) {
-  console.log("startTime la: " + startTime);
-  console.log("Time hien tai la: " + Date.now());
+function calculateRouteProgress(
+  startTime: string,
+  duration: number,
+  nowTime: string
+) {
+  // Hàm phụ: Chuyển đổi chuỗi "HH:mm" thành tổng số phút tính từ 00:00
+  const toMinutes = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  const startTotalMinutes = toMinutes(startTime);
+  const nowTotalMinutes = toMinutes(nowTime);
+
+  // 1. Tính thời gian đã trôi qua (phút)
+  const elapsedMinutes = nowTotalMinutes - startTotalMinutes;
+
+  // 2. Các trường hợp đặc biệt
+  if (duration === 0) return 1; // Nếu lộ trình 0 phút thì coi như xong luôn
+  if (elapsedMinutes <= 0) return 0; // Nếu chưa đến giờ chạy
+
+  // 3. Tính tỷ lệ
+  const progress = elapsedMinutes / duration;
+
+  // 4. Giới hạn kết quả: không được vượt quá 1 (100%)
+  return Math.min(progress, 1);
+}
+
+function Routing({ points, startTime, duration }: RoutingProps) {
   const map = useMap();
   const routeLayersRef = useRef<L.LayerGroup | null>(null);
 
@@ -53,30 +85,45 @@ function Routing({ points, startTime }) {
       addWaypoints: true,
     }).addTo(map);
 
-    routingControl.on("routesfound", function (e) {
-      console.log(e);
+    routingControl.on("routesfound", function (e: any) {
       if (routeLayersRef.current) {
         map.removeLayer(routeLayersRef.current);
       }
 
       const coordinates = e.routes[0].coordinates;
-
       const cleanedPath = cleanCoordinates(coordinates);
 
       const routeLine = L.polyline(coordinates, { color: "blue" });
 
-      const speed = 30;
+      const progress = calculateRouteProgress("07:00", 30, "06:30");
+      console.log("Progress:", progress);
 
-      const markerMotion = (L as any).markerMotion(cleanedPath, speed, {
-        icon: carIcon,
-        rotation: true,
-        autoplay: true,
-        loop: true,
-      });
+      if (progress >= 1.0) {
+        const lastPoint = coordinates[coordinates.length - 1];
 
-      routeLayersRef.current = L.layerGroup([routeLine, markerMotion]).addTo(
-        map
-      );
+        const staticMarker = L.marker(lastPoint, { icon: carIcon });
+
+        routeLayersRef.current = L.layerGroup([routeLine, staticMarker]).addTo(
+          map
+        );
+      } else {
+        const startIndex = Math.floor(cleanedPath.length * progress);
+        const truePath = cleanedPath.slice(startIndex);
+        console.log("TruePath la: ", truePath);
+
+        const speed = 300;
+
+        const markerMotion = (L as any).markerMotion(truePath, speed, {
+          icon: carIcon,
+          rotation: true,
+          autoplay: true,
+          loop: false,
+        });
+
+        routeLayersRef.current = L.layerGroup([routeLine, markerMotion]).addTo(
+          map
+        );
+      }
     });
 
     return () => {
@@ -90,7 +137,7 @@ function Routing({ points, startTime }) {
   return null;
 }
 
-export default function Map({ points, startTime }) {
+export default function Map({ points, startTime, duration }: RoutingProps) {
   return (
     <MapContainer
       center={[21.028667, 105.848843]}
@@ -104,7 +151,7 @@ export default function Map({ points, startTime }) {
         attribution="© Google Maps"
       />
 
-      <Routing points={points} startTime={startTime} />
+      <Routing points={points} startTime={startTime} duration={duration} />
     </MapContainer>
   );
 }
