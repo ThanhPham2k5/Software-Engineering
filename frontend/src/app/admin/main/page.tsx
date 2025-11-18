@@ -4,7 +4,7 @@ import Footer from "@/components/footer/page";
 import NavBar from "@/components/navbar/page";
 import "@/styles/admin/main.css";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function MainPage() {
@@ -14,26 +14,40 @@ export default function MainPage() {
 
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
-  const param = useParams();
   const router = useRouter();
-  const account_id = param.account_id;
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function checkAccount() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setIsLoading(false);
+        setValidAccount(false);
+        return;
+      }
+
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem("token");
+          }
           setValidAccount(false);
           return;
         }
 
         const account = await response.json();
-        if (account && account.Role === "Quản lý") {
+        if (account && account.role === "Quản lý") {
           setValidAccount(true);
           return;
         } else {
@@ -49,7 +63,7 @@ export default function MainPage() {
 
     setIsLoading(true); //chờ
     checkAccount();
-  }, [account_id]);
+  }, []);
 
   useEffect(() => {
     if (!validAccount && !isLoading) {
@@ -86,7 +100,7 @@ export default function MainPage() {
 
       {showMenu && (
         <div className="menu" ref={menuRef}>
-          <Link href={`/admin/${account_id}/schedule`} className="schedule">
+          <Link href={`/admin/schedule`} className="schedule">
             <img
               src="/shedule-ico.png"
               alt="schedule-ico"

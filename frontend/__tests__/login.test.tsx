@@ -104,7 +104,7 @@ describe("Kiểm thử giao diện trang đăng nhập:", () => {
     await user.click(submitButton);
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect(mockPush).toHaveBeenCalledWith(`/admin/12345/main`);
+      expect(mockPush).toHaveBeenCalledWith(`/admin/main`);
     });
   });
 

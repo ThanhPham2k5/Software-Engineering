@@ -37,7 +37,6 @@ export default function ScheduleDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const router = useRouter();
-  const account_id = params.account_id;
   const [scheduleDetail, setSheduleDetail] = useState<ScheduleDetail | null>(
     null
   );
@@ -47,18 +46,34 @@ export default function ScheduleDetailPage() {
 
   useEffect(() => {
     async function checkAccount() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        setIsLoading(false);
+        setValidAccount(false);
+        return;
+      }
+
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/accounts/${account_id}`
+          `${process.env.NEXT_PUBLIC_API_URL}/accounts/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!response.ok) {
+          if (response.status === 401) {
+            localStorage.removeItem("token");
+          }
           setValidAccount(false);
           return;
         }
 
         const account = await response.json();
-        if (account && account.Role === "Quản lý") {
+        if (account && account.role === "Quản lý") {
           setValidAccount(true);
           return;
         } else {
@@ -74,7 +89,7 @@ export default function ScheduleDetailPage() {
 
     setIsLoading(true); //chờ
     checkAccount();
-  }, [account_id]);
+  }, []);
 
   useEffect(() => {
     if (!validAccount && !isLoading) {
@@ -189,7 +204,7 @@ export default function ScheduleDetailPage() {
           <div className="detail-buttons">
             <div
               className="detail-return-button"
-              onClick={() => router.push(`/admin/${account_id}/schedule`)}
+              onClick={() => router.push(`/admin/schedule`)}
             >
               <img
                 src="/return-ico.png"

@@ -38,8 +38,6 @@ export default function Login() {
         }
       );
 
-      console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
-
       if (!response.ok) {
         console.error("Lỗi khi tải tài khoản:");
         setValidUsername(false);
@@ -47,11 +45,13 @@ export default function Login() {
         return;
       }
 
-      const account = await response.json();
+      // lấy token và lưu vào storage user
+      const data = await response.json();
+      localStorage.setItem("token", data.accessToken);
 
       setValidUsername(true);
       setValidPassword(true);
-      router.push(`/admin/${account.Account_id}/main`);
+      router.push(`/admin/main`);
     } catch (error) {
       console.error("Lỗi kết nối API:", error);
       setValidUsername(false);

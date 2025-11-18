@@ -16,6 +16,10 @@ export default function NavBar({ isLogined, disable }: NavBarProps) {
     setShowUser((prev) => !prev);
   }
 
+  function logOut() {
+    localStorage.removeItem("token");
+  }
+
   return (
     <div className="navbar">
       <Link href="/" className="navbar-left">
@@ -41,7 +45,11 @@ export default function NavBar({ isLogined, disable }: NavBarProps) {
 
             {showUser && (
               <div className="user-option">
-                <Link href="/" className="logout-button">
+                <Link
+                  href="/"
+                  className="logout-button"
+                  onClick={() => logOut()}
+                >
                   <img
                     src="/logout-button-ico.png"
                     alt="logout-button-ico"
