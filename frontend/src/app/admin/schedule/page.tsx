@@ -25,6 +25,11 @@ export default function ShedulePage() {
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
     null
   );
+
+  //sau khi thêm startdate & enddate :
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
+
   //
   useEffect(() => {
     async function checkAccount() {
@@ -103,21 +108,35 @@ export default function ShedulePage() {
 
   useEffect(() => {
     let filtered = [...allSchedules];
+
     if (searchTerm) {
+      const term = searchTerm.toLowerCase();
       filtered = filtered.filter(
         (schedule) =>
-          (schedule.DriverID?.DriverName || "")
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          (schedule.BusID?.BusLicense || "")
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          schedule._id.toLowerCase().includes(searchTerm.toLowerCase())
+          (schedule.DriverID?.DriverName || "").toLowerCase().includes(term) ||
+          (schedule.BusID?.BusLicense || "").toLowerCase().includes(term) ||
+          schedule._id.toLowerCase().includes(term)
       );
     }
 
+    if (filterStartDate || filterEndDate) {
+      const searchStart = filterStartDate
+        ? new Date(filterStartDate)
+        : new Date("1970-01-01");
+      const searchEnd = filterEndDate
+        ? new Date(filterEndDate)
+        : new Date("2999-12-31");
+
+      filtered = filtered.filter((schedule) => {
+        const schedStart = new Date(schedule.startDate);
+        const schedEnd = new Date(schedule.endDate);
+
+        return schedStart <= searchEnd && schedEnd >= searchStart;
+      });
+    }
+
     setShedule(filtered);
-  }, [searchTerm, allSchedules]);
+  }, [searchTerm, filterStartDate, filterEndDate, allSchedules]);
 
   async function handleSoftDelete(scheduleId: string) {
     if (
@@ -237,6 +256,8 @@ export default function ShedulePage() {
                   name="from"
                   id="from"
                   className="Schedule-time-from"
+                  value={filterStartDate}
+                  onChange={(e) => setFilterStartDate(e.target.value)}
                 />
               </div>
 
@@ -250,6 +271,8 @@ export default function ShedulePage() {
                   name="to"
                   id="to"
                   className="Schedule-time-to"
+                  value={filterEndDate}
+                  onChange={(e) => setFilterEndDate(e.target.value)}
                 />
               </div>
             </div>

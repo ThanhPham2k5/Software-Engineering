@@ -85,6 +85,8 @@
 .detail-status,
 .detail-route-name,
 .detail-start-time,
+.detail-start-date,
+.detail-end-date,
 .detail-bus,
 .detail-driver {
   font-size: 2.4rem;

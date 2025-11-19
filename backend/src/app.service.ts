@@ -244,6 +244,8 @@ export class AppService {
         RouteID: routes[0]._id,
         Duration: 30,
         startTime: '12:20',
+        startDate: '2025-01-01',
+        endDate: '2025-05-30',
         Status: true,
       },
       {
@@ -253,6 +255,8 @@ export class AppService {
         RouteID: routes[1]._id,
         Duration: 30,
         startTime: '12:00',
+        startDate: '2025-01-01',
+        endDate: '2025-05-30',
         Status: true,
       },
     ]);

@@ -35,8 +35,8 @@ const initialFormState = {
   BusID: "",
   RouteID: "",
   startTime: "",
-  // StartDate: "",
-  // EndDate: "",
+  startDate: "",
+  endDate: "",
   Duration: 40,
   Students: [] as string[],
   Status: true,
@@ -269,9 +269,9 @@ export default function CreateSchedule({
                 </label>
                 <input
                   type="date"
-                  name="StartDate"
+                  name="startDate"
                   id="from"
-                  //  value={formData.StartDate}
+                  value={formData.startDate}
                   onChange={handleChange}
                   disabled={loading}
                 />
@@ -283,9 +283,9 @@ export default function CreateSchedule({
                 </label>
                 <input
                   type="date"
-                  name="EndDate"
+                  name="endDate"
                   id="to"
-                  //     value={formData.EndDate}
+                  value={formData.endDate}
                   onChange={handleChange}
                   disabled={loading}
                 />

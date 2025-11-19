@@ -37,9 +37,9 @@ const initialFormState = {
   BusID: "",
   RouteID: "",
   startTime: "",
-  //StartDate: "",
-  EndDate: "",
-  Duration: 40,
+  startDate: "",
+  endDate: "",
+  Duration: 0,
   Students: [] as string[],
   Status: true,
 };
@@ -134,7 +134,8 @@ export default function ModifySchedule({
             BusID: scheduleData.BusID?._id || "",
             RouteID: scheduleData.RouteID?._id || "",
             startTime: scheduleData.startTime || "",
-            EndDate: formatDate(scheduleData.EndDate),
+            startDate: formatDate(scheduleData.startDate),
+            endDate: formatDate(scheduleData.endDate),
             Duration: scheduleData.Duration || 0,
             Students: selectedStudentIds || [],
             Status: scheduleData.Status,
@@ -298,9 +299,9 @@ export default function ModifySchedule({
                 </label>
                 <input
                   type="date"
-                  name="StartDate"
+                  name="startDate"
                   id="from"
-                  // value={formData.StartDate}
+                  value={formData.startDate}
                   onChange={handleChange}
                   disabled={loading}
                 />
@@ -313,9 +314,9 @@ export default function ModifySchedule({
                 </label>
                 <input
                   type="date"
-                  name="EndDate"
+                  name="endDate"
                   id="to"
-                  value={formData.EndDate}
+                  value={formData.endDate}
                   onChange={handleChange}
                   disabled={loading}
                 />

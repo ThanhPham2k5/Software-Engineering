@@ -17,6 +17,8 @@ type ScheduleDetail = {
   BusID: { BusLicense: string };
   DriverID: { _id: string; DriverName: string };
   startTime: string;
+  startDate: string;
+  endDate: string;
   duration: number;
   Status: boolean;
 };
@@ -300,6 +302,14 @@ export default function ScheduleDetailPage() {
 
               <div className="detail-start-time">
                 Giờ bắt đầu: {scheduleDetail.startTime}
+              </div>
+
+              <div className="detail-start-date">
+                Ngày bắt đầu: {scheduleDetail.startDate}
+              </div>
+
+              <div className="detail-end-date">
+                Ngày kết thúc: {scheduleDetail.endDate}
               </div>
 
               <div className="detail-bus">
