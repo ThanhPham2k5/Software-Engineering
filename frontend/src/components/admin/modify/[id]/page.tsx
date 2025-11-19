@@ -88,6 +88,7 @@ export default function ModifySchedule({
             routesRes,
             studentsRes,
             scheduleRes,
+            detailsRes,
           ] = await Promise.all([
             // fetch("http://localhost:8386/managers"),
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/drivers`),
@@ -95,6 +96,9 @@ export default function ModifySchedule({
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/routes`),
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/students`),
             fetch(`${process.env.NEXT_PUBLIC_API_URL}/schedules/${scheduleId}`),
+            fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/schedule-details?scheduleid=${scheduleId}`
+            ),
           ]);
 
           // setManagers(await managersRes.json());
@@ -106,20 +110,33 @@ export default function ModifySchedule({
           const scheduleData = await scheduleRes.json();
           console.log("Dữ liệu lịch trình đang muốn thay đổi:", scheduleData);
 
+          const detailsData = await detailsRes.json();
+          type DetailItem = {
+            StudentID: string | { _id: string };
+          };
+
+          const selectedStudentIds = detailsData.map((detail: DetailItem) =>
+            typeof detail.StudentID === "object"
+              ? detail.StudentID._id
+              : detail.StudentID
+          );
+
+          console.log("Dữ liệu lịch trình:", scheduleData);
+          console.log("Học sinh đã có trong lịch:", selectedStudentIds);
           const formatDate = (dateString: string) => {
             if (!dateString) return "";
             return new Date(dateString).toISOString().split("T")[0];
           };
 
           setFormData({
-            ManagerID: scheduleData.ManagerID || "", // Sửa: Đọc trực tiếp
+            ManagerID: scheduleData.ManagerID || "",
             DriverID: scheduleData.DriverID?._id || "",
             BusID: scheduleData.BusID?._id || "",
             RouteID: scheduleData.RouteID?._id || "",
             startTime: scheduleData.startTime || "",
             EndDate: formatDate(scheduleData.EndDate),
-            Duration: scheduleData.Duration || 0, // Sửa: Dùng 0
-            Students: scheduleData.Students?.map((s: Student) => s._id) || [],
+            Duration: scheduleData.Duration || 0,
+            Students: selectedStudentIds || [],
             Status: scheduleData.Status,
           });
         } catch (err) {
@@ -154,22 +171,25 @@ export default function ModifySchedule({
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
+
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/schedules/${scheduleId}`, // Sửa: Dùng env
+        `${process.env.NEXT_PUBLIC_API_URL}/schedules/${scheduleId}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(formData), // Gửi trực tiếp formData
         }
       );
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Cập nhật lịch trình thất bại");
       }
+
       alert("Cập nhật lịch trình thành công!");
-      setModifyProp(false);
-      onScheduleModified();
+      setModifyProp(false); // Đóng form
+      onScheduleModified(); // Refresh danh sách ở trang cha
     } catch (err: unknown) {
       console.error("Lỗi khi cập nhật:", err);
       let message = "Đã xảy ra lỗi không xác định";

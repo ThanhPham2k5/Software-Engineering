@@ -200,3 +200,9 @@
 .modify-menu-ico {
   cursor: pointer;
 }
+
+.modify-menu-ico.disabled,
+.Schedule-delete-ico.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

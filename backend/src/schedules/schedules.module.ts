@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SchedulesService } from './schedules.service';
 import { SchedulesController } from './schedules.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -7,6 +7,7 @@ import { ManagersModule } from 'src/managers/managers.module';
 import { DriversModule } from 'src/drivers/drivers.module';
 import { BusesModule } from 'src/buses/buses.module';
 import { RoutesModule } from 'src/routes/routes.module';
+import { ScheduleDetailsModule } from '../schedule-details/schedule-details.module';
 
 @Module({
   imports: [
@@ -20,6 +21,8 @@ import { RoutesModule } from 'src/routes/routes.module';
     DriversModule,
     BusesModule,
     RoutesModule,
+    //xuanthien
+    forwardRef(() => ScheduleDetailsModule),
   ],
   controllers: [SchedulesController],
   providers: [SchedulesService],

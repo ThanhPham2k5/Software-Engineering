@@ -33,6 +33,17 @@ type RouteDetail = {
   };
 };
 
+type StudentDetail = {
+  _id: string;
+  StudentID: {
+    StudentID: string;
+    StudentName: string;
+    ParentID: {
+      ParentName: string;
+    };
+  };
+};
+
 export default function ScheduleDetailPage() {
   const params = useParams();
   const id = params.id as string;
@@ -43,6 +54,9 @@ export default function ScheduleDetailPage() {
   const [location, setLocation] = useState<RouteDetail[]>([]);
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  //xt
+  const [students, setStudents] = useState<StudentDetail[]>([]);
+  //xt
 
   useEffect(() => {
     async function checkAccount() {
@@ -173,6 +187,26 @@ export default function ScheduleDetailPage() {
     };
   }, [showMap]);
 
+  useEffect(() => {
+    async function getStudentsByScheduleId() {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/schedule-details?scheduleid=${id}`
+      );
+      const data = await response.json();
+
+      if (response.ok) {
+        setStudents(data);
+      } else {
+        console.error("Lỗi khi tải danh sách học sinh:", data);
+        setStudents([]);
+      }
+    }
+
+    if (id && validAccount) {
+      getStudentsByScheduleId();
+    }
+  }, [id, validAccount]);
+
   return (
     <>
       <NavBar disable={true} isLogined={true}></NavBar>
@@ -284,23 +318,26 @@ export default function ScheduleDetailPage() {
                 <div className="student-title">Danh sách học sinh:</div>
 
                 <div className="student-list">
-                  {/* example item */}
-                  <div className="student-card">
-                    <div className="student-id">HS-01</div>
+                  {students.length === 0 && (
+                    <div className="student-card-empty">
+                      Không có học sinh nào trên tuyến này.
+                    </div>
+                  )}
 
-                    <div className="student-name">Em: Lê Văn A</div>
-
-                    <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
-                  </div>
-
-                  {/* fake items */}
-                  <div className="student-card">
-                    <div className="student-id">HS-01</div>
-
-                    <div className="student-name">Em: Lê Văn A</div>
-
-                    <div className="student-parent">Cha mẹ: Huỳnh Thanh A</div>
-                  </div>
+                  {students.map((detail) => (
+                    <div className="student-card" key={detail._id}>
+                      <div className="student-id">
+                        {detail.StudentID.StudentID}
+                      </div>
+                      <div className="student-name">
+                        Em:{" "}
+                        {detail.StudentID._id
+                          .substring(detail.StudentID._id.length - 6)
+                          .toUpperCase()}
+                        - {detail.StudentID.StudentName}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </Fragment>

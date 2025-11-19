@@ -5,6 +5,8 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  IsArray,
+  IsOptional,
 } from 'class-validator';
 
 export class CreateScheduleDto {
@@ -32,7 +34,21 @@ export class CreateScheduleDto {
   @IsString()
   startTime: string;
 
+  @IsNotEmpty()
+  @IsString()
+  startDate: string;
+
+  @IsNotEmpty()
+  @IsString()
+  endDate: string;
+
   @IsNotEmpty({ message: 'Tình trạng không được rỗng' })
   @IsBoolean({ message: 'Tình trạng phải là dạng đúng/sai' })
   Status: boolean;
+
+  //xuanthien
+  @IsArray({ message: 'Danh sách học sinh phải là một mảng' })
+  @IsMongoId({ each: true, message: 'Mỗi ID học sinh phải là mã hợp lệ' })
+  @IsOptional()
+  Students: string[];
 }

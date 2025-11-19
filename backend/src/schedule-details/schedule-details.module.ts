@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ScheduleDetailsService } from './schedule-details.service';
 import { ScheduleDetailsController } from './schedule-details.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -17,10 +17,13 @@ import { StudentsModule } from 'src/students/students.module';
         schema: ScheduleDetailSchema,
       },
     ]),
-    SchedulesModule,
+    //xuanthien
+    forwardRef(() => SchedulesModule),
     StudentsModule,
   ],
   controllers: [ScheduleDetailsController],
   providers: [ScheduleDetailsService],
+  //xuanthien
+  exports: [ScheduleDetailsService],
 })
 export class ScheduleDetailsModule {}

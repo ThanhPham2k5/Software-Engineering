@@ -8,6 +8,7 @@ interface Driver {
   DriverName: string;
   DriverID: string;
 }
+
 interface Bus {
   _id: string;
   BusLicense: string;
@@ -25,11 +26,11 @@ interface Student {
 type showCreate = {
   createProp: boolean;
   setCreateProp: React.Dispatch<React.SetStateAction<boolean>>;
-  onScheduleCreated: () => void; // callback
+  onScheduleCreated: () => void;
 };
 
 const initialFormState = {
-  ManagerID: "691a705dfb91e929d6a4e8f3", // mã quản lí tui dùng tạm ở database máy tui / lúc code thay lại cái này
+  ManagerID: "",
   DriverID: "",
   BusID: "",
   RouteID: "",
@@ -37,7 +38,7 @@ const initialFormState = {
   // StartDate: "",
   // EndDate: "",
   Duration: 40,
-  Students: [],
+  Students: [] as string[],
   Status: true,
 };
 
@@ -47,14 +48,11 @@ export default function CreateSchedule({
   onScheduleCreated,
 }: showCreate) {
   const createRef = useRef<HTMLDivElement | null>(null);
-
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [buses, setBuses] = useState<Bus[]>([]);
   const [routes, setRoutes] = useState<Route[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
-
   const [formData, setFormData] = useState(initialFormState);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,18 +74,35 @@ export default function CreateSchedule({
         setLoading(true);
         setError(null);
         try {
-          const [driversRes, busesRes, routesRes, studentsRes] =
+          const [driversRes, busesRes, routesRes, studentsRes, managersRes] =
             await Promise.all([
-              fetch("http://localhost:8386/drivers"),
-              fetch("http://localhost:8386/buses"),
-              fetch("http://localhost:8386/routes"),
-              fetch("http://localhost:8386/students"),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/drivers`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/buses`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/routes`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/students`),
+              fetch(`${process.env.NEXT_PUBLIC_API_URL}/managers`),
             ]);
 
-          setDrivers(await driversRes.json());
-          setBuses(await busesRes.json());
-          setRoutes(await routesRes.json());
-          setStudents(await studentsRes.json());
+          const driversData = await driversRes.json();
+          const busesData = await busesRes.json();
+          const routesData = await routesRes.json();
+          const studentsData = await studentsRes.json();
+          const managersData = await managersRes.json();
+
+          setDrivers(driversData);
+          setBuses(busesData);
+          setRoutes(routesData);
+          setStudents(studentsData);
+
+          const defaultManagerID =
+            managersData.length > 0 ? managersData[0]._id : "";
+
+          console.log("Đã chọn quản lý mặc định:", defaultManagerID);
+
+          setFormData({
+            ...initialFormState,
+            ManagerID: defaultManagerID,
+          });
         } catch (err) {
           console.error("Lỗi khi tải dữ liệu form:", err);
           setError("Không thể tải dữ liệu. Vui lòng thử lại.");
@@ -97,8 +112,6 @@ export default function CreateSchedule({
       };
 
       fetchData();
-
-      setFormData(initialFormState);
     }
   }, [createProp]);
 
@@ -125,11 +138,15 @@ export default function CreateSchedule({
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://localhost:8386/schedules", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // const response = await fetch("http://localhost:8386/schedules",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/schedules`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -140,7 +157,12 @@ export default function CreateSchedule({
       onScheduleCreated();
     } catch (err: unknown) {
       console.error("Lỗi khi tạo lịch trình:", err);
-      // setError(err.message);
+
+      let message = "Đã xảy ra lỗi không xác định";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -278,10 +300,9 @@ export default function CreateSchedule({
                   multiple
                   name="Students"
                   id="list"
-                  value={formData.Students}
+                  value={formData.Students as string[]}
                   onChange={handleChange}
                   disabled={loading}
-                  //size={6}
                 >
                   {students.map((student) => (
                     <option key={student._id} value={student._id}>

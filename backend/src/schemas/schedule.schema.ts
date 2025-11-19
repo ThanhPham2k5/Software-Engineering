@@ -25,6 +25,12 @@ export class Schedule {
   startTime: string;
 
   @Prop({ required: true })
+  startDate: string;
+
+  @Prop({ required: true })
+  endDate: string;
+
+  @Prop({ required: true })
   Status: boolean;
 }
 

@@ -6,6 +6,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsArray,
 } from 'class-validator';
 
 export class UpdateScheduleDto {
@@ -29,11 +30,25 @@ export class UpdateScheduleDto {
   @IsInt({ message: 'Thời gian phải là số nguyên' })
   Duration?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   startTime?: string;
 
   @IsOptional()
+  @IsString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsString()
+  endDate?: string;
+
+  @IsOptional()
   @IsBoolean({ message: 'Tình trạng phải là dạng đúng/sai' })
   Status?: boolean;
+
+  //xuanthien
+  @IsOptional()
+  @IsArray()
+  @IsMongoId({ each: true })
+  Students?: string[]; // Thêm trường này
 }
