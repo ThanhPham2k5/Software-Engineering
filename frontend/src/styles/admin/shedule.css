@@ -160,6 +160,7 @@
 
 .Schedule-card {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 30px 50px;
@@ -168,9 +169,24 @@
   background-color: rgb(242, 202, 104, 0.44);
 }
 
+.Schedule-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.Schedule-Time {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
 .Schedule-id,
 .driver-name,
-.bus-id {
+.bus-id,
+.Schedule-start-time,
+.Schedule-end-time {
   font-size: 2.4rem;
   font-weight: 500;
   color: #000;
@@ -178,7 +194,8 @@
 }
 
 .driver-name,
-.bus-id {
+.bus-id,
+.Schedule-end-time {
   margin-left: 100px;
 }
 

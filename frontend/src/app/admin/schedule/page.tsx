@@ -284,30 +284,31 @@ export default function ShedulePage() {
             {schedules.map((schedule) => {
               return (
                 <div className="Schedule-card" key={schedule._id}>
-                  <div className="Schedule-id" title={schedule._id}>
-                    {/* Cắt ngắn ID (lấy 6 ký tự cuối) */}
-                    {schedule._id
-                      .substring(schedule._id.length - 6)
-                      .toUpperCase()}
-                  </div>
+                  <div className="Schedule-info">
+                    <div className="Schedule-id" title={schedule._id}>
+                      {/* Cắt ngắn ID (lấy 6 ký tự cuối) */}
+                      {schedule._id
+                        .substring(schedule._id.length - 6)
+                        .toUpperCase()}
+                    </div>
 
-                  <div className="driver-name">
-                    {schedule.DriverID?.DriverName}
-                  </div>
+                    <div className="driver-name">
+                      {schedule.DriverID?.DriverName}
+                    </div>
 
-                  <div className="bus-id">{schedule.BusID?.BusLicense}</div>
+                    <div className="bus-id">{schedule.BusID?.BusLicense}</div>
 
-                  <img
-                    src={
-                      schedule.Status === true
-                        ? "/Schedule-active-ico.png"
-                        : "/Schedule-inactive-ico.png"
-                    }
-                    alt="Schedule-status-ico"
-                    className="Schedule-status-ico"
-                  />
+                    <img
+                      src={
+                        schedule.Status === true
+                          ? "/Schedule-active-ico.png"
+                          : "/Schedule-inactive-ico.png"
+                      }
+                      alt="Schedule-status-ico"
+                      className="Schedule-status-ico"
+                    />
 
-                  {/* <img
+                    {/* <img
 
                     src="/modify-button-ico.png"
 
@@ -325,44 +326,50 @@ export default function ShedulePage() {
 
                   /> */}
 
-                  <img
-                    src="/modify-button-ico.png"
-                    alt="modify-menu-ico"
-                    className={`modify-menu-ico ${
-                      schedule.Status === false ? "disabled" : ""
-                    }`}
-                    onClick={
-                      schedule.Status === true
-                        ? () => {
-                            setSelectedScheduleId(schedule._id);
+                    <img
+                      src="/modify-button-ico.png"
+                      alt="modify-menu-ico"
+                      className={`modify-menu-ico ${
+                        schedule.Status === false ? "disabled" : ""
+                      }`}
+                      onClick={
+                        schedule.Status === true
+                          ? () => {
+                              setSelectedScheduleId(schedule._id);
 
-                            setClickModify(true);
-                          }
-                        : undefined
-                    }
-                  />
+                              setClickModify(true);
+                            }
+                          : undefined
+                      }
+                    />
 
-                  <img
-                    src="/menu-button-ico.png"
-                    alt="Schedule-menu-ico"
-                    className="Schedule-menu-ico"
-                    onClick={() =>
-                      router.push(`/admin/schedule/${schedule._id}`)
-                    }
-                  />
+                    <img
+                      src="/menu-button-ico.png"
+                      alt="Schedule-menu-ico"
+                      className="Schedule-menu-ico"
+                      onClick={() =>
+                        router.push(`/admin/schedule/${schedule._id}`)
+                      }
+                    />
 
-                  <img
-                    src="/Schedule-delete-ico.png"
-                    alt="Schedule-delete-ico"
-                    className={`Schedule-delete-ico ${
-                      schedule.Status === false ? "disabled" : ""
-                    }`}
-                    onClick={
-                      schedule.Status === true
-                        ? () => handleSoftDelete(schedule._id)
-                        : undefined
-                    }
-                  />
+                    <img
+                      src="/Schedule-delete-ico.png"
+                      alt="Schedule-delete-ico"
+                      className={`Schedule-delete-ico ${
+                        schedule.Status === false ? "disabled" : ""
+                      }`}
+                      onClick={
+                        schedule.Status === true
+                          ? () => handleSoftDelete(schedule._id)
+                          : undefined
+                      }
+                    />
+                  </div>
+
+                  <div className="Schedule-Time">
+                    <div className="Schedule-start-time">Ngày bắt đầu: </div>
+                    <div className="Schedule-end-time">Ngày kết thúc: </div>
+                  </div>
                 </div>
               );
             })}
