@@ -150,7 +150,6 @@ export default function Map({ points, startTime, duration }: RoutingProps) {
         subdomains={["mt0", "mt1", "mt2", "mt3"]}
         attribution="© Google Maps"
       />
-
       <Routing points={points} startTime={startTime} duration={duration} />
     </MapContainer>
   );

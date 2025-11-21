@@ -205,7 +205,7 @@ export default function ModifySchedule({
 
   return (
     <>
-      <div className="Create">
+      <div className="Create" data-testid="Modify">
         <div className="Create-form" ref={createRef}>
           <div className="Create-body">
             <div className="Create-title">Cập nhật lịch trình: </div>
@@ -228,7 +228,11 @@ export default function ModifySchedule({
                   disabled={loading}
                 >
                   {drivers.map((driver) => (
-                    <option key={driver._id} value={driver._id}>
+                    <option
+                      key={driver._id}
+                      value={driver._id}
+                      data-testid="driver"
+                    >
                       {driver.DriverID} - {driver.DriverName}
                     </option>
                   ))}
@@ -249,7 +253,7 @@ export default function ModifySchedule({
                   disabled={loading}
                 >
                   {buses.map((bus) => (
-                    <option key={bus._id} value={bus._id}>
+                    <option key={bus._id} value={bus._id} data-testid="bus">
                       {bus.BusLicense}
                     </option>
                   ))}
@@ -270,7 +274,11 @@ export default function ModifySchedule({
                   disabled={loading}
                 >
                   {routes.map((route) => (
-                    <option key={route._id} value={route._id}>
+                    <option
+                      key={route._id}
+                      value={route._id}
+                      data-testid="route"
+                    >
                       {route.RouteName}
                     </option>
                   ))}
@@ -283,6 +291,7 @@ export default function ModifySchedule({
                   Chọn giờ chạy:
                 </label>
                 <input
+                  data-testid="startTime"
                   type="time"
                   name="startTime"
                   id="time"
@@ -298,6 +307,7 @@ export default function ModifySchedule({
                   Ngày bắt đầu:
                 </label>
                 <input
+                  data-testid="startDate"
                   type="date"
                   name="startDate"
                   id="from"
@@ -313,6 +323,7 @@ export default function ModifySchedule({
                   Ngày kết thúc:
                 </label>
                 <input
+                  data-testid="endDate"
                   type="date"
                   name="endDate"
                   id="to"
@@ -337,7 +348,11 @@ export default function ModifySchedule({
                   // size={6}
                 >
                   {students.map((student) => (
-                    <option key={student._id} value={student._id}>
+                    <option
+                      key={student._id}
+                      value={student._id}
+                      data-testid="student"
+                    >
                       {student._id} - {student.StudentName}
                     </option>
                   ))}
@@ -362,7 +377,7 @@ export default function ModifySchedule({
                 onClick={!loading ? handleSubmit : undefined}
               >
                 <img src="/done-ico.png" alt="done-ico" className="done-ico" />
-                <div className="done-text">
+                <div className="done-text" data-testid="btnaccept">
                   {loading ? "Đang cập nhật..." : "Hoàn thành"}
                 </div>
               </div>

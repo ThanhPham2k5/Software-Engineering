@@ -266,8 +266,8 @@ export default function ScheduleDetailPage() {
           </div>
         </div>
 
-        <div className="detail-body">
-          {scheduleDetail && (
+        <div className="detail-body" data-testid="detail-body">
+          {scheduleDetail && scheduleDetail._id && (
             <Fragment>
               <div className="detail-id">
                 Mã lịch trình:{" "}
@@ -279,6 +279,7 @@ export default function ScheduleDetailPage() {
               <div className="detail-status">
                 Trạng thái:
                 <div
+                  data-testid="detail-status"
                   className={
                     scheduleDetail.Status === true
                       ? "status-color active"
@@ -335,7 +336,11 @@ export default function ScheduleDetailPage() {
                   )}
 
                   {students.map((detail) => (
-                    <div className="student-card" key={detail._id}>
+                    <div
+                      className="student-card"
+                      key={detail._id}
+                      data-testid="student"
+                    >
                       <div className="student-id">
                         {detail.StudentID.StudentID}
                       </div>

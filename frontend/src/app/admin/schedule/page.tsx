@@ -10,8 +10,11 @@ import ModifySchedule from "../../../components/admin/modify/[id]/page";
 
 type Schedule = {
   _id: string;
-  DriverID: { DriverName: string };
-  BusID: { BusLicense: string };
+  DriverID?: { DriverName: string };
+  BusID?: { BusLicense: string };
+  Status: boolean;
+  startDate: string;
+  endDate: string;
 };
 
 export default function ShedulePage() {
@@ -20,7 +23,7 @@ export default function ShedulePage() {
   const [validAccount, setValidAccount] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   //xuanthien
-  const [allSchedules, setAllSchedules] = useState([]);
+  const [allSchedules, setAllSchedules] = useState<Schedule[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(
     null
@@ -86,7 +89,6 @@ export default function ShedulePage() {
       `${process.env.NEXT_PUBLIC_API_URL}/schedules`
     );
     const data = await response.json();
-    console.log("haha", data);
     //xuanthien
     setAllSchedules(data);
     //xuanthien
@@ -228,7 +230,7 @@ export default function ShedulePage() {
 
         <div className="Shedule-box">
           <div className="Shedule-tool">
-            <div className="Shedule-searchbar">
+            <div className="Shedule-searchbar" data-testid="Shedule-searchbar">
               <input
                 type="text"
                 name="search"
@@ -245,7 +247,7 @@ export default function ShedulePage() {
               />
             </div>
 
-            <div className="Schedule-time">
+            <div className="Schedule-time" data-testid="Schedule-time">
               <div className="Schedule-from">
                 <label className="Schedule-label" htmlFor="from">
                   Ngày bắt đầu :{" "}
@@ -278,12 +280,16 @@ export default function ShedulePage() {
             </div>
           </div>
 
-          <div className="Shedule-list">
+          <div className="Shedule-list" data-testid="Shedule-list">
             {/* example item */}
 
             {schedules.map((schedule) => {
               return (
-                <div className="Schedule-card" key={schedule._id}>
+                <div
+                  className="Schedule-card"
+                  key={schedule._id}
+                  data-testid="Schedule-card"
+                >
                   <div className="Schedule-id" title={schedule._id}>
                     {/* Cắt ngắn ID (lấy 6 ký tự cuối) */}
                     {schedule._id
@@ -305,6 +311,7 @@ export default function ShedulePage() {
                     }
                     alt="Schedule-status-ico"
                     className="Schedule-status-ico"
+                    data-testid="Schedule-status-ico"
                   />
 
                   {/* <img
@@ -326,6 +333,7 @@ export default function ShedulePage() {
                   /> */}
 
                   <img
+                    data-testid="modify-button"
                     src="/modify-button-ico.png"
                     alt="modify-menu-ico"
                     className={`modify-menu-ico ${
@@ -346,6 +354,7 @@ export default function ShedulePage() {
                     src="/menu-button-ico.png"
                     alt="Schedule-menu-ico"
                     className="Schedule-menu-ico"
+                    data-testid="Schedule-menu-ico"
                     onClick={() =>
                       router.push(`/admin/schedule/${schedule._id}`)
                     }
@@ -354,6 +363,7 @@ export default function ShedulePage() {
                   <img
                     src="/Schedule-delete-ico.png"
                     alt="Schedule-delete-ico"
+                    data-testid="Schedule-delete-ico"
                     className={`Schedule-delete-ico ${
                       schedule.Status === false ? "disabled" : ""
                     }`}

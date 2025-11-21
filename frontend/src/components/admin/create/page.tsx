@@ -170,7 +170,7 @@ export default function CreateSchedule({
 
   return (
     <>
-      <div className="Create">
+      <div className="Create" data-testid="Create">
         <div className="Create-form" ref={createRef}>
           <div className="Create-body">
             <div className="Create-title">Thêm lịch trình mới: </div>
@@ -194,7 +194,11 @@ export default function CreateSchedule({
                 >
                   <option value="">-- Chọn tài xế --</option>
                   {drivers.map((driver) => (
-                    <option key={driver._id} value={driver._id}>
+                    <option
+                      key={driver._id}
+                      value={driver._id}
+                      data-testid="driver"
+                    >
                       {driver._id
                         .substring(driver._id.length - 6)
                         .toUpperCase()}{" "}
@@ -219,7 +223,7 @@ export default function CreateSchedule({
                 >
                   <option value="">-- Chọn xe buýt --</option>
                   {buses.map((bus) => (
-                    <option key={bus._id} value={bus._id}>
+                    <option key={bus._id} value={bus._id} data-testid="bus">
                       {bus.BusLicense}
                     </option>
                   ))}
@@ -241,7 +245,11 @@ export default function CreateSchedule({
                 >
                   <option value="">-- Chọn tuyến đường --</option>
                   {routes.map((route) => (
-                    <option key={route._id} value={route._id}>
+                    <option
+                      key={route._id}
+                      value={route._id}
+                      data-testid="route"
+                    >
                       {route.RouteName}
                     </option>
                   ))}
@@ -253,6 +261,7 @@ export default function CreateSchedule({
                   Chọn giờ chạy:
                 </label>
                 <input
+                  data-testid="startTime"
                   type="time"
                   name="startTime"
                   id="time"
@@ -268,6 +277,7 @@ export default function CreateSchedule({
                   Ngày bắt đầu:
                 </label>
                 <input
+                  data-testid="startDate"
                   type="date"
                   name="startDate"
                   id="from"
@@ -282,6 +292,7 @@ export default function CreateSchedule({
                   Ngày kết thúc:
                 </label>
                 <input
+                  data-testid="endDate"
                   type="date"
                   name="endDate"
                   id="to"
@@ -305,7 +316,11 @@ export default function CreateSchedule({
                   disabled={loading}
                 >
                   {students.map((student) => (
-                    <option key={student._id} value={student._id}>
+                    <option
+                      key={student._id}
+                      value={student._id}
+                      data-testid="student"
+                    >
                       {student.StudentID} - {student.StudentName}
                     </option>
                   ))}
@@ -332,7 +347,7 @@ export default function CreateSchedule({
                 onClick={!loading ? handleSubmit : undefined}
               >
                 <img src="/done-ico.png" alt="done-ico" className="done-ico" />
-                <div className="done-text">
+                <div className="done-text" data-testid="btnaccept">
                   {loading ? "Đang xử lý..." : "Hoàn thành"}
                 </div>
               </div>
