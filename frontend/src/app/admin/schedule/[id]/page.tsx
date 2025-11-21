@@ -223,7 +223,15 @@ export default function ScheduleDetailPage() {
           }}
         >
           {/* put map here */}
-          <div className="map" ref={mapRef}>
+          <div
+            className="map"
+            ref={mapRef}
+            style={{
+              width: "calc(100% - 20%)",
+              margin: "10px auto",
+              borderRadius: "12px",
+            }}
+          >
             {scheduleDetail && (
               <Map
                 points={cleanCoordinates}
