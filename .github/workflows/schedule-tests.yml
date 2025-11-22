@@ -38,4 +38,4 @@ jobs:
       - name: Run Backend Schedule Tests
         run: |
           cd backend
-          npm run test -- account.service.spec.ts account.controller.spec.ts
+          npm run test -- schedule-details.controller.spec.ts schedule-details.service.spec.ts
