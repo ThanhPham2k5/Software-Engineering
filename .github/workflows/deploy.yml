@@ -2,7 +2,7 @@ name: Deploy CD
 
 on:
   workflow_run:
-    workflows: ["Login Tests CI"]
+    workflows: ["Login Tests CI", "Schedule Tests CI"]
     types:
       - completed
 

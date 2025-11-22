@@ -1,4 +1,4 @@
-name: Login Tests CI
+name: Schedule Tests CI
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-login:
+  test-schedule:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,17 +25,17 @@ jobs:
           cd frontend
           npm install
 
-      - name: Run Frontend Login Tests
+      - name: Run Frontend Schedule Tests
         run: |
           cd frontend
-          npm run test -- __tests__/login.test.tsx
+          npm run test -- __tests__/schedule.test.tsx
 
       - name: Install backend dependencies
         run: |
           cd backend
           npm install
 
-      - name: Run Backend Login Tests
+      - name: Run Backend Schedule Tests
         run: |
           cd backend
           npm run test -- account.service.spec.ts account.controller.spec.ts
