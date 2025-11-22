@@ -85,9 +85,28 @@ function Routing({ points, startTime, duration }: RoutingProps) {
     if (!map || !points || points.length === 0) return;
 
     const routingControl = L.Routing.control({
-      waypoints: points.map((coord) => L.latLng(coord[0], coord[1])),
+      plan: (L.Routing as any).plan(
+        points.map((coord) => L.latLng(coord[0], coord[1])),
+        {
+          createMarker: function (i: any, wp: any) {
+            return L.marker(wp.latLng, {
+              draggable: false,
+            });
+          },
+          addWaypoints: false,
+          draggableWaypoints: false,
+        }
+      ),
+
+      lineOptions: {
+        addWaypoints: false,
+        extendToWaypoints: false,
+      } as any,
+
       show: true,
-      addWaypoints: true,
+      addWaypoints: false,
+      routeWhileDragging: false,
+      showAlternatives: false,
     }).addTo(map);
 
     routingControl.on("routesfound", function (e: any) {
