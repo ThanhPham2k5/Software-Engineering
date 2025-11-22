@@ -377,8 +377,15 @@ export default function ShedulePage() {
                   </div>
 
                   <div className="Schedule-Time">
-                    <div className="Schedule-start-time">Ngày bắt đầu: </div>
-                    <div className="Schedule-end-time">Ngày kết thúc: </div>
+                    <div className="Schedule-start-time">
+                      Ngày bắt đầu:{" "}
+                      {new Date(schedule.startDate).toLocaleDateString("vi-VN")}
+                    </div>
+
+                    <div className="Schedule-end-time">
+                      Ngày kết thúc:{" "}
+                      {new Date(schedule.endDate).toLocaleDateString("vi-VN")}
+                    </div>
                   </div>
                 </div>
               );

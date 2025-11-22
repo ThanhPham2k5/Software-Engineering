@@ -135,10 +135,34 @@ export default function CreateSchedule({
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     setError(null);
+    const missingFields = [];
+
+    if (!formData.DriverID) missingFields.push("Tài xế");
+    if (!formData.BusID) missingFields.push("Xe buýt");
+    if (!formData.RouteID) missingFields.push("Tuyến đường");
+    if (!formData.startTime) missingFields.push("Giờ chạy");
+    if (!formData.startDate) missingFields.push("Ngày bắt đầu");
+    if (!formData.endDate) missingFields.push("Ngày kết thúc");
+
+    if (formData.startDate && formData.endDate) {
+      if (new Date(formData.endDate) < new Date(formData.startDate)) {
+        window.alert("Lỗi: Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu!");
+        return;
+      }
+    }
+
+    if (missingFields.length > 0) {
+      const message =
+        "Vui lòng điền đầy đủ các thông tin sau:\n- " +
+        missingFields.join("\n- ");
+      window.alert(message);
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      // const response = await fetch("http://localhost:8386/schedules",
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/schedules`,
         {
@@ -153,16 +177,17 @@ export default function CreateSchedule({
         throw new Error(errorData.message || "Tạo lịch trình thất bại");
       }
 
+      window.alert("Tạo lịch trình thành công!");
       setCreateProp(false);
       onScheduleCreated();
     } catch (err: unknown) {
       console.error("Lỗi khi tạo lịch trình:", err);
-
       let message = "Đã xảy ra lỗi không xác định";
       if (err instanceof Error) {
         message = err.message;
       }
-      setError(message);
+
+      window.alert("Lỗi: " + message);
     } finally {
       setLoading(false);
     }

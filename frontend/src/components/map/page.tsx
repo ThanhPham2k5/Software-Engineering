@@ -25,9 +25,8 @@ L.Icon.Default.mergeOptions({
 });
 
 const carIcon = L.icon({
-  iconUrl: markerIcon2x.src,
+  iconUrl: "/bus.png",
   iconSize: [32, 32],
-  iconAnchor: [16, 16],
 });
 
 function cleanCoordinates(coords: L.LatLng[]) {
@@ -86,6 +85,7 @@ function Routing({ points, startTime, duration }: RoutingProps) {
     }).addTo(map);
 
     routingControl.on("routesfound", function (e: any) {
+      console.log("RouteFound: ", e);
       if (routeLayersRef.current) {
         map.removeLayer(routeLayersRef.current);
       }
@@ -111,7 +111,11 @@ function Routing({ points, startTime, duration }: RoutingProps) {
         const truePath = cleanedPath.slice(startIndex);
         console.log("TruePath la: ", truePath);
 
-        const speed = 300;
+        const summary = e.routes[0].summary;
+        const totalDistanceMeters = summary.totalDistance;
+        const totalDistanceKm = totalDistanceMeters / 1000;
+        const durationHours = duration / 60;
+        const speed = totalDistanceKm / durationHours;
 
         const markerMotion = (L as any).markerMotion(truePath, speed, {
           icon: carIcon,
@@ -132,7 +136,7 @@ function Routing({ points, startTime, duration }: RoutingProps) {
         map.removeLayer(routeLayersRef.current);
       }
     };
-  }, [map, points]);
+  }, [map, points, duration]);
 
   return null;
 }

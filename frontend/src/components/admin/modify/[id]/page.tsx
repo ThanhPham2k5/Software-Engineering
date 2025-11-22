@@ -28,7 +28,6 @@ interface Route {
 interface Student {
   _id: string;
   StudentName: string;
-  StudentID: string;
 }
 
 const initialFormState = {
@@ -170,8 +169,36 @@ export default function ModifySchedule({
   };
 
   const handleSubmit = async () => {
-    setLoading(true);
     setError(null);
+
+    const missingFields = [];
+
+    if (!formData.DriverID) missingFields.push("Tài xế");
+    if (!formData.BusID) missingFields.push("Xe buýt");
+    if (!formData.RouteID) missingFields.push("Tuyến đường");
+    if (!formData.startTime) missingFields.push("Giờ chạy");
+    if (!formData.startDate) missingFields.push("Ngày bắt đầu");
+    if (!formData.endDate) missingFields.push("Ngày kết thúc");
+
+    if (formData.startDate && formData.endDate) {
+      const start = new Date(formData.startDate);
+      const end = new Date(formData.endDate);
+
+      if (end < start) {
+        window.alert("Lỗi: Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu!");
+        return;
+      }
+    }
+
+    if (missingFields.length > 0) {
+      const message =
+        "Vui lòng điền đầy đủ các thông tin sau:\n- " +
+        missingFields.join("\n- ");
+      window.alert(message);
+      return; // Dừng hàm
+    }
+
+    setLoading(true);
 
     try {
       const response = await fetch(
@@ -179,7 +206,7 @@ export default function ModifySchedule({
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData), // Gửi trực tiếp formData
+          body: JSON.stringify(formData),
         }
       );
 
@@ -188,15 +215,16 @@ export default function ModifySchedule({
         throw new Error(errorData.message || "Cập nhật lịch trình thất bại");
       }
 
-      alert("Cập nhật lịch trình thành công!");
-      setModifyProp(false); // Đóng form
-      onScheduleModified(); // Refresh danh sách ở trang cha
+      window.alert("Cập nhật lịch trình thành công!");
+      setModifyProp(false);
+      onScheduleModified();
     } catch (err: unknown) {
       console.error("Lỗi khi cập nhật:", err);
       let message = "Đã xảy ra lỗi không xác định";
       if (err instanceof Error) {
         message = err.message;
       }
+      window.alert("Lỗi: " + message);
       setError(message);
     } finally {
       setLoading(false);
@@ -353,7 +381,10 @@ export default function ModifySchedule({
                       value={student._id}
                       data-testid="student"
                     >
-                      {student._id} - {student.StudentName}
+                      {student._id
+                        .substring(student._id.length - 6)
+                        .toUpperCase()}{" "}
+                      - {student.StudentName}
                     </option>
                   ))}
                 </select>
@@ -374,7 +405,7 @@ export default function ModifySchedule({
               </div>
               <div
                 className={`Create-done-button ${loading ? "disabled" : ""}`}
-                onClick={!loading ? handleSubmit : undefined}
+                onClick={!loading ? () => handleSubmit() : undefined}
               >
                 <img src="/done-ico.png" alt="done-ico" className="done-ico" />
                 <div className="done-text" data-testid="btnaccept">

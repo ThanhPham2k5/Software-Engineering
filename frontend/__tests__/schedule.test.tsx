@@ -12,9 +12,9 @@ import ModifySchedule from "@/components/admin/modify/[id]/page";
 const mockSchedules = [
   {
     _id: "691ff06e7845656d154f3d1a",
-    ManagerID: "691ff06e7845656d154f3cff",
+    ManagerID: "69200ba3b52a1bfac3747ba9",
     DriverID: {
-      _id: "691ff06e7845656d154f3d01",
+      _id: "69200ba3b52a1bfac3747bab",
       DriverName: "Nguyễn Đức Thắng",
       Gender: "Nam",
       Phone: "0123456789",
@@ -25,7 +25,7 @@ const mockSchedules = [
       updatedAt: "2025-11-21T04:54:06.280Z",
     },
     BusID: {
-      _id: "691ff06e7845656d154f3d0d",
+      _id: "69200ba3b52a1bfac3747bb7",
       BusLicense: "1234-ABCD",
       Capacity: 40,
       Status: true,
@@ -34,7 +34,7 @@ const mockSchedules = [
       updatedAt: "2025-11-21T04:54:06.591Z",
     },
     RouteID: {
-      _id: "691ff06e7845656d154f3d13",
+      _id: "69200ba3b52a1bfac3747bbd",
       RouteName: "Đại học Sài Gòn - Bệnh viện Chợ Rẫy",
       Status: true,
       __v: 0,
@@ -447,27 +447,43 @@ describe("Test schedule detail page", () => {
   it("Test render full page", async () => {
     render(<ScheduleDetailPage />);
 
-    await waitFor(async () => {
-      expect(screen.getByText("Chi tiết lịch trình")).toBeInTheDocument();
-      expect(screen.getByText("Quay lại")).toBeInTheDocument();
-      expect(screen.getByText("Theo dõi")).toBeInTheDocument();
-      expect(screen.getByText("Mã lịch trình: 4F3D1A")).toBeInTheDocument();
-      expect(screen.getByText("Trạng thái:")).toBeInTheDocument();
-      expect(screen.getByTestId("detail-status")).toBeInTheDocument();
-      expect(
-        screen.getByText("Tuyến đường: Đại học Sài Gòn - Bệnh viện Chợ Rẫy")
-      ).toBeInTheDocument();
-      expect(screen.getByText("Giờ bắt đầu: 12:20")).toBeInTheDocument();
-      expect(screen.getByText("Ngày bắt đầu: 2025-01-01")).toBeInTheDocument();
-      expect(screen.getByText("Ngày kết thúc: 2025-05-30")).toBeInTheDocument();
-      expect(screen.getByText("Xe buýt: 1234-ABCD")).toBeInTheDocument();
-      expect(
-        screen.getByText("Tài xế: 4F3D01 - Nguyễn Đức Thắng")
-      ).toBeInTheDocument();
-      expect(screen.getByText("Danh sách học sinh:")).toBeInTheDocument();
-      const scheduleCards = await screen.findAllByTestId("student");
-      expect(scheduleCards.length).toBe(3);
-    });
+    await screen.findByText("Mã lịch trình: 4F3D1A");
+
+    expect(screen.getByText("Chi tiết lịch trình")).toBeInTheDocument();
+    expect(screen.getByText("Quay lại")).toBeInTheDocument();
+    expect(screen.getByText("Theo dõi")).toBeInTheDocument();
+    expect(screen.getByText("Trạng thái:")).toBeInTheDocument();
+    expect(
+      screen.getByText("Tuyến đường: Đại học Sài Gòn - Bệnh viện Chợ Rẫy")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Giờ bắt đầu: 12:20")).toBeInTheDocument();
+    expect(screen.getByText("Ngày bắt đầu: 1/1/2025")).toBeInTheDocument();
+    expect(screen.getByText("Ngày kết thúc: 30/5/2025")).toBeInTheDocument();
+    expect(screen.getByText("Xe buýt: 1234-ABCD")).toBeInTheDocument();
+    expect(
+      screen.getByText("Tài xế: 747BAB - Nguyễn Đức Thắng")
+    ).toBeInTheDocument();
+
+    expect(screen.getByText("Danh sách học sinh:")).toBeInTheDocument();
+    expect(screen.getByTestId("student-list")).toBeInTheDocument();
+  });
+
+  it("Test nut quay lai", async () => {
+    render(<ScheduleDetailPage />);
+    const user = userEvent.setup();
+
+    const backButton = screen.getByText("Quay lại");
+    await user.click(backButton);
+    expect(mockPush).toHaveBeenCalledWith(`/admin/schedule`);
+  });
+
+  it("Test nut theo doi", async () => {
+    render(<ScheduleDetailPage />);
+    const user = userEvent.setup();
+
+    const viewButton = screen.getByText("Theo dõi");
+    await user.click(viewButton);
+    expect(screen.getByTestId("detail-map")).toBeInTheDocument();
   });
 });
 
@@ -565,6 +581,29 @@ describe("Test create schedule page", () => {
       />
     );
     const user = userEvent.setup();
+    await screen.findByText(/Nguyễn Đức Thắng/i);
+
+    const driverSelect = screen.getByLabelText(/Chọn tài xế:/i);
+    await user.selectOptions(driverSelect, "69200ba3b52a1bfac3747bab");
+
+    const busSelect = screen.getByLabelText(/Chọn xe buýt:/i);
+    await user.selectOptions(busSelect, "69200ba3b52a1bfac3747bb7");
+
+    const routeSelect = screen.getByLabelText(/Chọn tuyến đường:/i);
+    await user.selectOptions(routeSelect, "69200ba3b52a1bfac3747bbd");
+
+    const startDateInput = screen.getByLabelText(/Ngày bắt đầu:/i);
+    await user.type(startDateInput, "2025-01-01");
+
+    const endDateInput = screen.getByLabelText(/Ngày kết thúc:/i);
+    await user.type(endDateInput, "2025-01-02");
+
+    const startTimeInput = screen.getByLabelText(/Chọn giờ chạy:/i);
+    await user.type(startTimeInput, "07:00");
+
+    const studentSelect = screen.getByLabelText(/Danh sách học sinh:/i);
+    await user.selectOptions(studentSelect, ["69200ba3b52a1bfac3747baf"]);
+
     const acceptButton = await screen.getByTestId("btnaccept");
     await user.click(acceptButton);
     await waitFor(() => {
@@ -675,7 +714,7 @@ describe("Test modify schedule page", () => {
     expect(setModifyProp).toHaveBeenCalled();
   });
 
-  it("Test nut xac nhan them", async () => {
+  it("Test nut xac nhan chinh sua", async () => {
     const setModifyProp = jest.fn();
     const onScheduleModified = jest.fn();
 
@@ -688,6 +727,29 @@ describe("Test modify schedule page", () => {
       />
     );
     const user = userEvent.setup();
+    await screen.findByText(/Nguyễn Đức Thắng/i);
+
+    const driverSelect = screen.getByLabelText(/Chọn tài xế:/i);
+    await user.selectOptions(driverSelect, "69200ba3b52a1bfac3747bab");
+
+    const busSelect = screen.getByLabelText(/Chọn xe buýt:/i);
+    await user.selectOptions(busSelect, "69200ba3b52a1bfac3747bb7");
+
+    const routeSelect = screen.getByLabelText(/Chọn tuyến đường:/i);
+    await user.selectOptions(routeSelect, "69200ba3b52a1bfac3747bbd");
+
+    const startDateInput = screen.getByLabelText(/Ngày bắt đầu:/i);
+    await user.type(startDateInput, "2025-01-01");
+
+    const endDateInput = screen.getByLabelText(/Ngày kết thúc:/i);
+    await user.type(endDateInput, "2025-01-02");
+
+    const startTimeInput = screen.getByLabelText(/Chọn giờ chạy:/i);
+    await user.type(startTimeInput, "07:00");
+
+    const studentSelect = screen.getByLabelText(/Danh sách học sinh:/i);
+    await user.selectOptions(studentSelect, ["69200ba3b52a1bfac3747baf"]);
+
     const acceptButton = await screen.getByTestId("btnaccept");
     await user.click(acceptButton);
     await waitFor(() => {

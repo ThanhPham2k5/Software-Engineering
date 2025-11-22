@@ -243,7 +243,7 @@ export class AppService {
         BusID: buses[0]._id,
         RouteID: routes[0]._id,
         Duration: 30,
-        startTime: '12:20',
+        startTime: '09:00',
         startDate: '2025-01-01',
         endDate: '2025-05-30',
         Status: true,

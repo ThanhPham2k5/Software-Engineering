@@ -19,7 +19,7 @@ type ScheduleDetail = {
   startTime: string;
   startDate: string;
   endDate: string;
-  duration: number;
+  Duration: number;
   Status: boolean;
 };
 
@@ -38,6 +38,7 @@ type RouteDetail = {
 type StudentDetail = {
   _id: string;
   StudentID: {
+    _id: string;
     StudentID: string;
     StudentName: string;
     ParentID: {
@@ -120,6 +121,7 @@ export default function ScheduleDetailPage() {
       );
       const data = await response.json();
       console.log(data.startTime);
+      console.log(data.Duration);
       setSheduleDetail(data);
     }
     if (id) {
@@ -146,6 +148,9 @@ export default function ScheduleDetailPage() {
   }, [scheduleDetail, id]);
 
   const cleanCoordinates = useMemo(() => {
+    if (!location || !Array.isArray(location)) {
+      return [];
+    }
     // 1. Sắp xếp mảng "location" GỐC
     const sortedLocation = [...location].sort((a, b) => a.Order - b.Order);
 
@@ -171,6 +176,7 @@ export default function ScheduleDetailPage() {
   }, [location]);
 
   console.log("Đã làm sạch:", cleanCoordinates);
+  console.log("Toàn bộ data:", scheduleDetail);
 
   const [showMap, setShowMap] = useState(false);
 
@@ -209,6 +215,25 @@ export default function ScheduleDetailPage() {
     }
   }, [id, validAccount]);
 
+  useEffect(() => {
+    if (scheduleDetail && showMap) {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const [h, m] = scheduleDetail.startTime.split(":").map(Number);
+      const startMinutes = h * 60 + m;
+
+      const maxMinutes = startMinutes + scheduleDetail.Duration;
+
+      if (currentMinutes < startMinutes) {
+        window.alert("Lỗi: Chưa đến giờ khởi hành! Vui lòng quay lại sau.");
+        setShowMap(false);
+      } else if (currentMinutes > maxMinutes) {
+        window.alert("Lỗi: Tuyến đã đến trạm.");
+        setShowMap(false);
+      }
+    }
+  }, [scheduleDetail, showMap]);
+
   return (
     <>
       <NavBar disable={true} isLogined={true}></NavBar>
@@ -216,6 +241,7 @@ export default function ScheduleDetailPage() {
       <div className="detail">
         <div
           className="detail-map"
+          data-testid="detail-map"
           style={{
             visibility: showMap ? "visible" : "hidden",
             opacity: showMap ? 1 : 0,
@@ -236,7 +262,7 @@ export default function ScheduleDetailPage() {
               <Map
                 points={cleanCoordinates}
                 startTime={scheduleDetail.startTime}
-                duration={scheduleDetail.duration}
+                duration={scheduleDetail.Duration}
               />
             )}
           </div>
@@ -314,11 +340,13 @@ export default function ScheduleDetailPage() {
               </div>
 
               <div className="detail-start-date">
-                Ngày bắt đầu: {scheduleDetail.startDate}
+                Ngày bắt đầu:{" "}
+                {new Date(scheduleDetail.startDate).toLocaleDateString("vi-VN")}
               </div>
 
               <div className="detail-end-date">
-                Ngày kết thúc: {scheduleDetail.endDate}
+                Ngày kết thúc:{" "}
+                {new Date(scheduleDetail.endDate).toLocaleDateString("vi-VN")}
               </div>
 
               <div className="detail-bus">
@@ -336,7 +364,7 @@ export default function ScheduleDetailPage() {
               <div className="detail-students">
                 <div className="student-title">Danh sách học sinh:</div>
 
-                <div className="student-list">
+                <div className="student-list" data-testid="student-list">
                   {students.length === 0 && (
                     <div className="student-card-empty">
                       Không có học sinh nào trên tuyến này.
@@ -356,7 +384,7 @@ export default function ScheduleDetailPage() {
                         Em:{" "}
                         {detail.StudentID._id
                           .substring(detail.StudentID._id.length - 6)
-                          .toUpperCase()}
+                          .toUpperCase()}{" "}
                         - {detail.StudentID.StudentName}
                       </div>
                     </div>
