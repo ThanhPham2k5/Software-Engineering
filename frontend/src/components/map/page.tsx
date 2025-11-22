@@ -75,6 +75,12 @@ function Routing({ points, startTime, duration }: RoutingProps) {
   const map = useMap();
   const routeLayersRef = useRef<L.LayerGroup | null>(null);
 
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  const currentTime = `${hours}:${minutes}`;
+
   useEffect(() => {
     if (!map || !points || points.length === 0) return;
 
@@ -95,7 +101,7 @@ function Routing({ points, startTime, duration }: RoutingProps) {
 
       const routeLine = L.polyline(coordinates, { color: "blue" });
 
-      const progress = calculateRouteProgress("07:00", 30, "06:30");
+      const progress = calculateRouteProgress(startTime, duration, currentTime);
       console.log("Progress:", progress);
 
       if (progress >= 1.0) {
@@ -136,7 +142,7 @@ function Routing({ points, startTime, duration }: RoutingProps) {
         map.removeLayer(routeLayersRef.current);
       }
     };
-  }, [map, points, duration]);
+  }, [map, points, duration, currentTime, startTime]);
 
   return null;
 }
