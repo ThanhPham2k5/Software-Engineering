@@ -40,7 +40,7 @@ export class ScheduleDetailsController {
     if (!studentValid)
       throw new HttpException('Mã học sinh không chính xác.', 404);
 
-    const postScheduleDetail = this.scheduleDetailService.createScheduleDetail(
+    const postScheduleDetail = await this.scheduleDetailService.createScheduleDetail(
       createScheduleDetailDto,
     );
     if (!postScheduleDetail)
