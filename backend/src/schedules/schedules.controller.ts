@@ -50,7 +50,7 @@ export class SchedulesController {
     if (!routeValid)
       throw new HttpException('Mã tuyến đường không chính xác.', 404);
 
-    const postSchedule = this.scheduleService.createSchedule(createScheduleDto);
+    const postSchedule = await this.scheduleService.createSchedule(createScheduleDto);
     if (!postSchedule)
       throw new HttpException('Thêm lịch trình không thành công', 404);
     return postSchedule;

@@ -55,13 +55,18 @@ describe('SchedulesService', () => {
   };
 
   beforeEach(async () => {
-    // Mock ScheduleModel
-    mockScheduleModel = {
-      find: jest.fn(),
-      findById: jest.fn(),
-      findByIdAndUpdate: jest.fn(),
-      findByIdAndDelete: jest.fn(),
-    };
+    // Mock ScheduleModel with constructor support
+    const mockSave = jest.fn().mockResolvedValue(mockSchedule);
+    
+    mockScheduleModel = jest.fn(function(data: any) {
+      Object.assign(this, data);
+      this.save = mockSave;
+    });
+
+    mockScheduleModel.find = jest.fn();
+    mockScheduleModel.findById = jest.fn();
+    mockScheduleModel.findByIdAndUpdate = jest.fn();
+    mockScheduleModel.findByIdAndDelete = jest.fn();
 
     // Mock ScheduleDetailsService
     mockScheduleDetailsService = {
@@ -96,80 +101,97 @@ describe('SchedulesService', () => {
 
   describe('createSchedule', () => {
     it('1.Tạo lịch trình với học sinh', async () => {
-      const saveMock = jest.fn().mockResolvedValue(mockSchedule);
-      const constructorMock = jest.fn().mockReturnValue({
-        save: saveMock,
-      });
-
-      // Mock the constructor to create new instance
-      (mockScheduleModel as any).mockImplementation(constructorMock);
-
-      // Make it work with 'new' keyword
-      mockScheduleModel.constructor = constructorMock;
-
       mockScheduleDetailsService.createManyScheduleDetails.mockResolvedValue(
         undefined,
       );
 
-      // Since the service uses 'new this.ScheduleModel()', we need to mock it differently
-      const spy = jest
-        .spyOn(service as any, 'ScheduleModel', 'get')
-        .mockReturnValue({
-          constructor: function (data: any) {
-            this.save = saveMock;
-          },
-          save: saveMock,
-        });
-
-      // Alternative approach: directly test the logic
       const result = await service.createSchedule(createScheduleDto);
 
-      // Since we can't easily mock the 'new' constructor, we'll verify the service exists
-      expect(service).toBeDefined();
-
-      spy.mockRestore();
+      expect(result).toEqual(mockSchedule);
+      expect(mockScheduleDetailsService.createManyScheduleDetails).toHaveBeenCalledWith(
+        mockSchedule._id,
+        createScheduleDto.Students,
+      );
     });
 
     it('2.Gọi createManyScheduleDetails khi có học sinh', async () => {
-      // Mock the save function and constructor
-      const mockSave = jest.fn().mockResolvedValue(mockSchedule);
+      mockScheduleDetailsService.createManyScheduleDetails.mockResolvedValue(
+        undefined,
+      );
 
-      // We need to mock the ScheduleModel constructor
-      const MockConstructor = jest.fn();
-      MockConstructor.prototype.save = mockSave;
+      await service.createSchedule(createScheduleDto);
 
-      // Replace the model with a function that can be called with 'new'
-      jest
-        .spyOn(mockScheduleModel, 'constructor')
-        .mockImplementation(() => ({
-          save: mockSave,
-        }));
+      expect(
+        mockScheduleDetailsService.createManyScheduleDetails,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        mockScheduleDetailsService.createManyScheduleDetails,
+      ).toHaveBeenCalledWith(
+        mockSchedule._id,
+        createScheduleDto.Students,
+      );
+    });
+
+    it('3.Không gọi createManyScheduleDetails khi không có học sinh', async () => {
+      const dtoWithoutStudents: CreateScheduleDto = {
+        ...createScheduleDto,
+        Students: [],
+      };
 
       mockScheduleDetailsService.createManyScheduleDetails.mockResolvedValue(
         undefined,
       );
 
-      // Since mocking 'new' is complex in Jest, test with minimal mock
-      expect(service).toBeDefined();
+      await service.createSchedule(dtoWithoutStudents);
+
+      expect(
+        mockScheduleDetailsService.createManyScheduleDetails,
+      ).not.toHaveBeenCalled();
     });
 
-    it('3.Xử lý lỗi từ ScheduleDetailsService', async () => {
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
-
+    it('4.Xử lý lỗi từ ScheduleDetailsService', async () => {
+      const error = new Error('Schedule Details Service Error');
       mockScheduleDetailsService.createManyScheduleDetails.mockRejectedValue(
-        new Error('Service Error'),
+        error,
       );
 
-      expect(service).toBeDefined();
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+      const result = await service.createSchedule(createScheduleDto);
+
+      expect(result).toEqual(mockSchedule);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Lỗi từ ScheduleDetailsService:',
+        error,
+      );
 
       consoleSpy.mockRestore();
+    });
+
+    it('5.Tạo schedule mà không có Students field', async () => {
+      const dtoWithoutStudents = {
+        ManagerID: '507f1f77bcf86cd799439012',
+        DriverID: '507f1f77bcf86cd799439013',
+        BusID: '507f1f77bcf86cd799439014',
+        RouteID: '507f1f77bcf86cd799439015',
+        Duration: 60,
+        startTime: '08:00',
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
+        Status: true,
+      } as CreateScheduleDto;
+
+      const result = await service.createSchedule(dtoWithoutStudents);
+
+      expect(result).toEqual(mockSchedule);
+      expect(
+        mockScheduleDetailsService.createManyScheduleDetails,
+      ).not.toHaveBeenCalled();
     });
   });
 
   describe('getSchedules', () => {
-    it('4.Lấy tất cả lịch trình với các trường được điền đầy đủ', async () => {
+    it('6.Lấy tất cả lịch trình với các trường được điền đầy đủ', async () => {
       const mockPopulate = jest.fn().mockResolvedValue([mockSchedule]);
       mockScheduleModel.find.mockReturnValue({
         populate: mockPopulate,
@@ -183,9 +205,10 @@ describe('SchedulesService', () => {
         'BusID',
         'RouteID',
       ]);
+      expect(result).toEqual([mockSchedule]);
     });
 
-    it('5.Trả về mảng rỗng khi không có lịch trình nào tồn tại', async () => {
+    it('7.Trả về mảng rỗng khi không có lịch trình nào tồn tại', async () => {
       const mockPopulate = jest.fn().mockResolvedValue([]);
       mockScheduleModel.find.mockReturnValue({
         populate: mockPopulate,
@@ -194,11 +217,27 @@ describe('SchedulesService', () => {
       const result = await service.getSchedules();
 
       expect(mockScheduleModel.find).toHaveBeenCalled();
+      expect(result).toEqual([]);
+    });
+
+    it('8.Populate các trường quan hệ đúng', async () => {
+      const mockPopulate = jest.fn().mockResolvedValue([mockSchedule]);
+      mockScheduleModel.find.mockReturnValue({
+        populate: mockPopulate,
+      });
+
+      await service.getSchedules();
+
+      expect(mockPopulate).toHaveBeenCalledWith([
+        'DriverID',
+        'BusID',
+        'RouteID',
+      ]);
     });
   });
 
   describe('getScheduleById', () => {
-    it('6.Lấy lịch trình theo id với các trường được điền đầy đủ', async () => {
+    it('9.Lấy lịch trình theo id với các trường được điền đầy đủ', async () => {
       const scheduleId = '507f1f77bcf86cd799439011';
       const mockPopulate = jest.fn().mockResolvedValue(mockSchedule);
       mockScheduleModel.findById.mockReturnValue({
@@ -213,9 +252,10 @@ describe('SchedulesService', () => {
         'BusID',
         'RouteID',
       ]);
+      expect(result).toEqual(mockSchedule);
     });
 
-    it('7.Trả về null khi không tìm thấy lịch trình', async () => {
+    it('10.Trả về null khi không tìm thấy lịch trình', async () => {
       const scheduleId = 'nonexistent-id';
       const mockPopulate = jest.fn().mockResolvedValue(null);
       mockScheduleModel.findById.mockReturnValue({
@@ -225,11 +265,24 @@ describe('SchedulesService', () => {
       const result = await service.getScheduleById(scheduleId);
 
       expect(mockScheduleModel.findById).toHaveBeenCalledWith(scheduleId);
+      expect(result).toBeNull();
+    });
+
+    it('11.Gọi findById đúng ID', async () => {
+      const scheduleId = '507f1f77bcf86cd799439011';
+      const mockPopulate = jest.fn().mockResolvedValue(mockSchedule);
+      mockScheduleModel.findById.mockReturnValue({
+        populate: mockPopulate,
+      });
+
+      await service.getScheduleById(scheduleId);
+
+      expect(mockScheduleModel.findById).toHaveBeenCalledWith(scheduleId);
     });
   });
 
   describe('updateSchedule', () => {
-    it('8.Cập nhật lịch trình với dữ liệu mới', async () => {
+    it('12.Cập nhật lịch trình với dữ liệu mới', async () => {
       const scheduleId = '507f1f77bcf86cd799439011';
       const updatedSchedule = {
         ...mockSchedule,
@@ -255,9 +308,10 @@ describe('SchedulesService', () => {
       expect(
         mockScheduleDetailsService.updateStudentListForSchedule,
       ).toHaveBeenCalledWith(scheduleId, updateScheduleDto.Students);
+      expect(result).toEqual(updatedSchedule);
     });
 
-    it('9.Cập nhật lịch trình mà không cập nhật danh sách học sinh khi không có trường Students', async () => {
+    it('13.Cập nhật lịch trình mà không cập nhật danh sách học sinh khi không có trường Students', async () => {
       const scheduleId = '507f1f77bcf86cd799439011';
       const dtoWithoutStudents: UpdateScheduleDto = {
         Duration: 90,
@@ -281,9 +335,10 @@ describe('SchedulesService', () => {
       expect(
         mockScheduleDetailsService.updateStudentListForSchedule,
       ).not.toHaveBeenCalled();
+      expect(result).toEqual(updatedSchedule);
     });
 
-    it('10.Xử lý lỗi khi cập nhật danh sách học sinh', async () => {
+    it('14.Xử lý lỗi khi cập nhật danh sách học sinh', async () => {
       const scheduleId = '507f1f77bcf86cd799439011';
       const updatedSchedule = { ...mockSchedule, Duration: 90 };
 
@@ -292,22 +347,23 @@ describe('SchedulesService', () => {
         new Error('Update Error'),
       );
 
-      const consoleSpy = jest
-        .spyOn(console, 'error')
-        .mockImplementation(() => {});
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       const result = await service.updateSchedule(
         scheduleId,
         updateScheduleDto,
       );
 
-      expect(mockScheduleModel.findByIdAndUpdate).toHaveBeenCalled();
-      expect(consoleSpy).toHaveBeenCalled();
+      expect(result).toEqual(updatedSchedule);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Lỗi khi cập nhật danh sách học sinh:',
+        expect.any(Error),
+      );
 
       consoleSpy.mockRestore();
     });
 
-    it('11.Trả về null khi không tìm thấy lịch trình trong quá trình cập nhật', async () => {
+    it('15.Trả về null khi không tìm thấy schedule', async () => {
       const scheduleId = 'nonexistent-id';
 
       mockScheduleModel.findByIdAndUpdate.mockResolvedValue(null);
@@ -317,16 +373,30 @@ describe('SchedulesService', () => {
         updateScheduleDto,
       );
 
-      expect(mockScheduleModel.findByIdAndUpdate).toHaveBeenCalledWith(
-        scheduleId,
-        expect.any(Object),
-        { new: true },
+      expect(result).toBeNull();
+    });
+
+    it('16.Loại bỏ Students khỏi update data trước khi gửi tới Model', async () => {
+      const scheduleId = '507f1f77bcf86cd799439011';
+      const updatedSchedule = { ...mockSchedule };
+
+      mockScheduleModel.findByIdAndUpdate.mockResolvedValue(updatedSchedule);
+      mockScheduleDetailsService.updateStudentListForSchedule.mockResolvedValue(
+        undefined,
       );
+
+      await service.updateSchedule(scheduleId, updateScheduleDto);
+
+      // Verify that Students field was not passed to findByIdAndUpdate
+      const callArgs = mockScheduleModel.findByIdAndUpdate.mock.calls[0];
+      expect(callArgs[1]).not.toHaveProperty('Students');
+      expect(callArgs[1]).toHaveProperty('Duration');
+      expect(callArgs[1]).toHaveProperty('startTime');
     });
   });
 
   describe('deleteSchedule', () => {
-    it('12.Xóa lịch trình theo id', async () => {
+    it('17.Xóa lịch trình thành công', async () => {
       const scheduleId = '507f1f77bcf86cd799439011';
 
       mockScheduleModel.findByIdAndDelete.mockResolvedValue(mockSchedule);
@@ -336,21 +406,32 @@ describe('SchedulesService', () => {
       expect(mockScheduleModel.findByIdAndDelete).toHaveBeenCalledWith(
         scheduleId,
       );
+      expect(result).toEqual(mockSchedule);
     });
 
-    it('13.Trả về null khi không tìm thấy lịch trình trong quá trình xóa', async () => {
+    it('18.Trả về null khi không tìm thấy lịch trình', async () => {
       const scheduleId = 'nonexistent-id';
 
       mockScheduleModel.findByIdAndDelete.mockResolvedValue(null);
 
       const result = await service.deleteSchedule(scheduleId);
 
+      expect(result).toBeNull();
+    });
+
+    it('19.Gọi findByIdAndDelete với đúng ID', async () => {
+      const scheduleId = '507f1f77bcf86cd799439011';
+
+      mockScheduleModel.findByIdAndDelete.mockResolvedValue(mockSchedule);
+
+      await service.deleteSchedule(scheduleId);
+
       expect(mockScheduleModel.findByIdAndDelete).toHaveBeenCalledWith(
         scheduleId,
       );
     });
 
-    it('14.Xóa lịch trình thành công và trả về dữ liệu đã xóa', async () => {
+    it('20.Trả về deleted schedule object', async () => {
       const scheduleId = '507f1f77bcf86cd799439011';
       const deletedSchedule = { ...mockSchedule };
 
@@ -358,9 +439,10 @@ describe('SchedulesService', () => {
 
       const result = await service.deleteSchedule(scheduleId);
 
-      expect(mockScheduleModel.findByIdAndDelete).toHaveBeenCalledWith(
-        scheduleId,
-      );
+      expect(result).toEqual(deletedSchedule);
+      if (result) {
+        expect(result._id).toBe(mockSchedule._id);
+      }
     });
   });
 });
